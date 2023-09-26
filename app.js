@@ -327,8 +327,35 @@ app.get("/videos", (request, response) => {
       } else {
         model.videoclips = theVideoclips;
       }
-      console.log("THIS IS THE GIVEN MODEL" + model);
       response.render("videos.handlebars", model);
+    }
+  );
+});
+
+app.get("/videos/:vid", (request, response) => {
+  const videoId = request.params.vid;
+  db.get(
+    `SELECT videoclip.*, GROUP_CONCAT(artist.aname, ' x ') AS anames, artist.*
+    FROM videoclip 
+    INNER JOIN artistVideoclip ON videoclip.vid = artistVideoclip.vid
+    INNER JOIN artist ON artistVideoclip.aid = artist.aid
+    WHERE videoclip.vid= ?
+    GROUP BY videoclip.vid`,
+    [videoId],
+    (error, videoclip) => {
+      if (error) {
+        response.status(500).send("Database error");
+        console.log(error);
+      } else if (!videoclip) {
+        response.status(404).send("Videoclip not found");
+      } else {
+        const model = {
+          title: "Video",
+          style: "video.css",
+          videoclip: videoclip,
+        };
+        response.render("video.handlebars", model);
+      }
     }
   );
 });
