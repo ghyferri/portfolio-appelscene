@@ -1,0 +1,205 @@
+:root {
+  --text: #f7efe8;
+  --background: #040201;
+  --primary: #df823c;
+  --secondary: #010304;
+  --accent: #979cdd;
+}
+
+html {
+  font-family: "Roboto", sans-serif;
+  background-color: var(--background);
+  color: white;
+  height: 100%;
+}
+/* Reset some default styles */
+body,
+ul {
+  margin: 0;
+  padding: 0;
+  background-color: var(--background);
+  color: var(--text);
+}
+
+/* Style the header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text);
+  padding: 10px 20px;
+}
+
+/* Style the logo and title */
+.logo-title {
+  display: flex;
+  align-items: center;
+}
+
+.logo-title img {
+  margin-right: 10px;
+}
+
+/* Style the navigation links */
+.nav-links ul {
+  list-style: none;
+  display: flex;
+}
+
+.nav-links li {
+  margin-right: 20px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-size: 1.2em;
+  color: var(--text);
+}
+.nav-links a:hover {
+  color: var(--primary);
+}
+
+/* Style the hamburger menu for smaller screens */
+.hamburger-menu {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.bar {
+  width: 25px;
+  height: 3px;
+  background-color: var(--text);
+  margin: 3px 0;
+}
+
+.gradient-text {
+  margin: 0;
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    var(--accent)
+  ); /* Define your gradient colors and direction */
+  -webkit-background-clip: text; /* Clip the gradient to the text */
+  background-clip: text;
+  color: transparent; /* Make the text transparent */
+}
+
+main {
+  padding: 10px 35px;
+}
+.gradient-footer {
+  padding: 20px; /* Add some padding for spacing */
+  text-align: center; /* Center-align the text */
+  color: #fff; /* Set the text color to white */
+  font-size: 14px; /* Adjust the font size as needed */
+}
+.column {
+  margin-top: 6px;
+  margin-bottom: 12px;
+}
+
+.card {
+  border: solid 5px var(--primary);
+  box-shadow: 0 0 15px rgb(52, 29, 180);
+}
+.card-body {
+  border: 0;
+  background-color: white;
+}
+
+.card-title {
+  margin-bottom: 8px;
+}
+.card-text {
+  margin-bottom: 5px;
+  font-size: 0.8em;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: start;
+}
+.container_info {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+}
+.video-info {
+  flex: 1;
+  max-width: 400px;
+  padding: 20px;
+  background-color: var(--background);
+  color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  background-color: transparent;
+  margin: 20px;
+}
+
+.video-info h1 {
+  font-size: 24px;
+  margin-top: 0;
+}
+
+.video-info p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.video-container {
+  margin: 20px;
+}
+
+@media screen and (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .video-info,
+  .video-container {
+    max-width: 100%;
+    margin: 10px;
+  }
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    background-color: var(--accent);
+    position: absolute;
+    top: 90px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .nav-links.active {
+    display: block;
+  }
+
+  .hamburger-menu {
+    display: flex;
+  }
+
+  /* Hide hamburger menu when links are displayed */
+  .hamburger-menu.active {
+    display: none;
+  }
+
+  .container_info {
+    flex-direction: column;
+    min-height: 0vh;
+  }
+  .video-info,
+  .video-container {
+    max-width: 100%;
+  }
+  iframe {
+    width: 100%;
+    height: 100%;
+  }
+  .gradient-footer {
+    margin-top: 80px;
+  }
+}

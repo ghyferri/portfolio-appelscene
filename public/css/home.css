@@ -1,0 +1,219 @@
+:root {
+  --text: #f7efe8;
+  --background: #040201;
+  --primary: #df823c;
+  --secondary: #010304;
+  --accent: #979cdd;
+}
+
+html {
+  font-family: "Roboto", sans-serif;
+  background-color: var(--background);
+  color: white;
+  height: 100%;
+}
+/* Reset some default styles */
+body,
+ul {
+  margin: 0;
+  padding: 0;
+  background-color: var(--background);
+  color: var(--text);
+}
+
+/* Style the header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text);
+  padding: 10px 20px;
+}
+
+/* Style the logo and title */
+.logo-title {
+  display: flex;
+  align-items: center;
+}
+
+.logo-title img {
+  margin-right: 10px;
+}
+
+/* Style the navigation links */
+.nav-links ul {
+  list-style: none;
+  display: flex;
+}
+
+.nav-links li {
+  margin-right: 20px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-size: 1.2em;
+  color: var(--text);
+}
+.nav-links a:hover {
+  color: var(--primary);
+}
+
+/* Style the hamburger menu for smaller screens */
+.hamburger-menu {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.bar {
+  width: 25px;
+  height: 3px;
+  background-color: var(--text);
+  margin: 3px 0;
+}
+
+.gradient-text {
+  margin: 0;
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    var(--accent)
+  ); /* Define your gradient colors and direction */
+  -webkit-background-clip: text; /* Clip the gradient to the text */
+  background-clip: text;
+  color: transparent; /* Make the text transparent */
+}
+
+main {
+  padding: 10px 35px;
+}
+
+.center-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  height: 100%;
+}
+
+.center-post {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.content-left-align {
+  text-align: left;
+}
+
+.content-right-align {
+  align-items: center;
+}
+
+.custom-button {
+  background-color: transparent; /* Change this to your desired color */
+  color: #ffffff; /* Change this to the text color you prefer */
+}
+.custom-button:hover {
+  background-color: var(--accent);
+}
+.image-container {
+  display: flex;
+  justify-content: space-around;
+}
+.image-container img {
+  width: 90%; /* Adjust the width as needed */
+  max-width: 100%; /* Ensure images don't exceed their container's width */
+  box-shadow: 0 0 25px rgb(52, 29, 180);
+}
+.orange_shadow {
+  box-shadow: 0 0 25px orange;
+}
+.container {
+  margin-bottom: 10%;
+}
+
+.hero_img {
+  border: solid var(--primary) 7px;
+  border-radius: 25px;
+}
+
+.gradient-footer {
+  /* background: linear-gradient(0deg, var(--primary), var(--background)); */
+  padding: 20px; /* Add some padding for spacing */
+  text-align: center; /* Center-align the text */
+  color: #fff; /* Set the text color to white */
+  font-size: 14px; /* Adjust the font size as needed */
+}
+
+.circle h2 {
+  font-size: 18px; /* Adjust title font size */
+  margin: 5px 0; /* Add margin around title */
+}
+
+.circle p {
+  font-size: 14px; /* Adjust description font size */
+}
+.circle-wrapper {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+}
+.emoji {
+  font-size: 5em;
+}
+/* Center the text and social icons vertically and horizontally */
+.text-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.yt {
+  width: 90%;
+}
+.ytimg {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+}
+
+/* Media query for small screens */
+@media screen and (max-width: 768px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    background-color: var(--accent);
+    position: absolute;
+    top: 90px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .nav-links.active {
+    display: block;
+  }
+
+  .hamburger-menu {
+    display: flex;
+  }
+
+  /* Hide hamburger menu when links are displayed */
+  .hamburger-menu.active {
+    display: none;
+  }
+  .content-left-align {
+    align-items: center;
+    text-align: center;
+    margin-bottom: 3em;
+  }
+  .content-right-align {
+    align-items: center;
+    text-align: center;
+    margin-bottom: 3em;
+  }
+}

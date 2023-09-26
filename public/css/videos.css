@@ -1,0 +1,144 @@
+:root {
+  --text: #f7efe8;
+  --background: #040201;
+  --primary: #df823c;
+  --secondary: #010304;
+  --accent: #979cdd;
+}
+
+html {
+  font-family: "Roboto", sans-serif;
+  background-color: var(--background);
+  color: white;
+  height: 100%;
+}
+/* Reset some default styles */
+body,
+ul {
+  margin: 0;
+  padding: 0;
+  background-color: var(--background);
+  color: var(--text);
+}
+
+/* Style the header */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text);
+  padding: 10px 20px;
+}
+
+.logo-title {
+  display: flex;
+  align-items: center;
+}
+
+.logo-title img {
+  margin-right: 10px;
+}
+
+.nav-links ul {
+  list-style: none;
+  display: flex;
+}
+
+.nav-links li {
+  margin-right: 20px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-size: 1.2em;
+  color: var(--text);
+}
+.nav-links a:hover {
+  color: var(--primary);
+}
+
+.hamburger-menu {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.bar {
+  width: 25px;
+  height: 3px;
+  background-color: var(--text);
+  margin: 3px 0;
+}
+
+.gradient-text {
+  margin: 0;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+main {
+  padding: 10px 35px;
+}
+.gradient-footer {
+  padding: 20px; /* Add some padding for spacing */
+  text-align: center; /* Center-align the text */
+  color: #fff; /* Set the text color to white */
+  font-size: 14px; /* Adjust the font size as needed */
+}
+.column {
+  margin-top: 6px;
+  margin-bottom: 12px;
+}
+
+.card {
+  border: solid 5px var(--primary);
+
+  box-shadow: 0 0 15px rgb(52, 29, 180);
+}
+.card-body {
+  border: 0;
+  background-color: black;
+}
+.card:hover {
+  border: 20 solid blue;
+
+  filter: brightness(0.65);
+}
+
+.card-title {
+  margin-bottom: 8px;
+}
+.card-text {
+  margin-bottom: 5px;
+  font-size: 0.8em;
+}
+img {
+  width: 100%;
+}
+@media screen and (max-width: 768px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    background-color: var(--accent);
+    position: absolute;
+    top: 90px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .nav-links.active {
+    display: block;
+  }
+
+  .hamburger-menu {
+    display: flex;
+  }
+
+  /* Hide hamburger menu when links are displayed */
+  .hamburger-menu.active {
+    display: none;
+  }
+}
