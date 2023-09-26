@@ -9,6 +9,7 @@
     </p>
   </div>
   <div class="divider"></div>
+
   {{#if hasDatabaseError}}
     <div>
       Sorry, there was a problem with the database:
@@ -16,18 +17,19 @@
       {{theError}}
     </div>
   {{else}}
-    {{#each videoclips}}
-      <div class="container">
-        <div class="columns">
-          <div id="content" class="columns">
-            <h1>{{vtitle}}</h1>
-            <p>{{vdesc}}</p>
+    <div class="container">
+      <div class="columns">
+        {{#each videoclips}}
+          <div class="column col-6 col-md-12">
+            <a href="/video">
+              <div class="card">
+                <h1>{{vtitle}} - {{anames}}</h1>
+                <img src="{{vimage}}" alt="Video Thumbnail {{vtitle}}" />
+              </div>
+            </a>
           </div>
-          <ul class="pagination" id="pagination"></ul>
-        </div>
+        {{/each}}
       </div>
-    {{/each}}
+    </div>
   {{/if}}
-  <script src="/js/videos.js" defer></script>
-
 </div>

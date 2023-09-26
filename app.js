@@ -77,7 +77,7 @@ db.run(
 );
 // creates table videoclip at startup
 db.run(
-  "CREATE TABLE IF NOT EXISTS videoclip (vid INTEGER PRIMARY KEY NOT NULL UNIQUE, vtitle TEXT NOT NULL, vdesc TEXT NOT NULL, vrelease TEXT NOT NULL, vlink TEXT NOT NULL, gid INTEGER, FOREIGN KEY (gid) REFERENCES genre (gid))",
+  "CREATE TABLE IF NOT EXISTS videoclip (vid INTEGER PRIMARY KEY NOT NULL UNIQUE, vtitle TEXT NOT NULL, vdesc TEXT NOT NULL, vrelease TEXT NOT NULL, vlink TEXT NOT NULL, vimage TEXT NOT NULL, gid INTEGER, FOREIGN KEY (gid) REFERENCES genre (gid))",
   (error) => {
     if (error) {
       // tests error: display error
@@ -92,6 +92,7 @@ db.run(
           desc: "A song about the luxury lifestyle",
           release: "24-02-2023",
           link: "https://www.youtube.com/watch?v=0_RTEZ7MBOM",
+          image: "/img/landen_thumbnail.png",
           gid: "2",
         },
         {
@@ -100,6 +101,7 @@ db.run(
           desc: "A song about cars",
           release: "11-08-2023",
           link: "https://www.youtube.com/watch?v=Db7Rmm4Oqyc",
+          image: "/img/landen_thumbnail.png",
           gid: "2",
         },
         {
@@ -108,6 +110,7 @@ db.run(
           desc: "A song from 2 young uk rappers",
           release: "28-04-2023",
           link: "https://www.youtube.com/watch?v=NWXNliUOHvA",
+          image: "/img/landen_thumbnail.png",
           gid: "5",
         },
         {
@@ -116,6 +119,7 @@ db.run(
           desc: "2 drillers from Berchem owning the block",
           release: "07-09-2023",
           link: "https://www.youtube.com/watch?v=WK4ovj8znPc",
+          image: "/img/looptmetpijp_thumbnail.png",
           gid: "1",
         },
         {
@@ -124,19 +128,21 @@ db.run(
           desc: "A boy that is born to be the king of the castle",
           release: "28-09-2023",
           link: "https://www.youtube.com/watch?v=scooMbR0XCA",
+          image: "/img/landen_thumbnail.png",
           gid: "4",
         },
       ];
       // inserts projects
       videoclips.forEach((oneVideoclip) => {
         db.run(
-          "INSERT or IGNORE INTO videoclip (vid, vtitle, vdesc, vrelease, vlink, gid) VALUES (?, ?, ?, ?, ?, ?)",
+          "INSERT or IGNORE INTO videoclip (vid, vtitle, vdesc, vrelease, vlink, vimage, gid) VALUES (?, ?, ?, ?, ?, ?, ?)",
           [
             oneVideoclip.id,
             oneVideoclip.title,
             oneVideoclip.desc,
             oneVideoclip.release,
             oneVideoclip.link,
+            oneVideoclip.image,
             oneVideoclip.gid,
           ],
           (error) => {
@@ -300,55 +306,33 @@ app.get("/", (request, response) => {
 // });
 
 app.get("/videos", (request, response) => {
-  db.all("SELECT * FROM videoclip", (error, theVideoclips) => {
-    const model = {
-      title: "Videos",
-      style: "videos.css",
-      hasDatabaseError: false,
-      theError: "",
-      videoclips: [],
-    };
+  db.all(
+    `SELECT videoclip.*, GROUP_CONCAT(artist.aname, ' x ') AS anames
+      FROM videoclip 
+      INNER JOIN artistVideoclip ON videoclip.vid = artistVideoclip.vid
+      INNER JOIN artist ON artistVideoclip.aid = artist.aid
+      GROUP BY videoclip.vid`,
+    (error, theVideoclips) => {
+      const model = {
+        title: "Videos",
+        style: "videos.css",
+        hasDatabaseError: false,
+        theError: "",
+        videoclips: [],
+      };
 
-    if (error) {
-      model.hasDatabaseError = true;
-      model.theError = error;
-    } else {
-      model.videoclips = theVideoclips;
+      if (error) {
+        model.hasDatabaseError = true;
+        model.theError = error;
+      } else {
+        model.videoclips = theVideoclips;
+      }
+      console.log("THIS IS THE GIVEN MODEL" + model);
+      response.render("videos.handlebars", model);
     }
-
-    response.render("videos.handlebars", model);
-  });
+  );
 });
 
-// app.get("/videos", (request, response) => {
-//   db.all("SELECT * FROM videoclip", (error, theVideoclips) => {
-//     if (error) {
-//       const model = {
-//         hasDatabaseError: true,
-//         theError: error,
-//         videoclips: [],
-//       };
-//       response.render("videos.handlebars", {
-//         title: "Videos",
-//         style: "videos.css",
-//         model: model,
-//       });
-//       console.log("eerste " + model);
-//     } else {
-//       const model = {
-//         hasDatabaseError: false,
-//         theError: "",
-//         videoclips: theVideoclips,
-//       };
-//       response.render("videos.handlebars", {
-//         title: "Videos",
-//         style: "videos.css",
-//         model: model,
-//       });
-//       console.log("tweede " + model);
-//     }
-//   });
-// });
 app.get("/video", (request, response) => {
   response.render("video.handlebars", {
     title: "Video",

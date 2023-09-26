@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const cardHtml = `
             <a href="/video">
                 <div class="card">
+                    <h1>${window.videoTitle}</h1>
                     <img src="/img/landen_thumbnail.png" alt="Video Thumbnail {{id ofzo}}" />
                 </div>
             </a>
