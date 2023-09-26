@@ -14,16 +14,10 @@ app.set("views", "./views");
 app.use(express.static("public"));
 
 // MODEL (DATA)
-const humans = [
-  { id: "0", name: "Jerome" },
-  { id: "1", name: "Mira" },
-  { id: "2", name: "Linus" },
-  { id: "3", name: "Susanne" },
-  { id: "4", name: "Jasmin" },
-];
+const sqlite3 = require("sqlite3");
+const db = new sqlite3.Database("projects-gh.db");
 
 // CONTROLLER (THE BOSS)
-// defines route "/"
 app.get("/", (request, response) => {
   response.render("home.handlebars", {
     title: "Home",
@@ -60,20 +54,6 @@ app.get("/login", (request, response) => {
     style: "login.css",
   });
 });
-
-// // defines route "/humans"
-// app.get("/humans", (request, response) => {
-//   const model = { listHumans: humans }; // defines the model
-//   // in the next line, you should send the above defined
-//   // model to the page and not an empty object {}...
-//   response.render("humans.handlebars", model);
-// });
-
-// app.get("/humans/:id", (request, response) => {
-//   const id = request.params.id; // E.g. “1”, “2”, “3”, …
-//   const model = humans[id];
-//   response.render("human.handlebars", model);
-// });
 
 // defines the final default route 404 NOT FOUND
 app.use(function (req, res) {

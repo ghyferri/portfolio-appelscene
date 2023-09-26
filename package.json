@@ -1,5 +1,5 @@
 {
-  "name": "handlebars-example",
+  "name": "portfolio-appelscene",
   "version": "1.0.0",
   "description": "Code for handlebars MVC (Model-View-Controller)",
   "main": "app.js",
@@ -9,7 +9,7 @@
   "keywords": [
     "handlebars in Express."
   ],
-  "author": "JL",
+  "author": "GH",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
