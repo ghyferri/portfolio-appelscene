@@ -9,12 +9,25 @@
     </p>
   </div>
   <div class="divider"></div>
-  <div class="container">
-    <div class="columns">
-      <div id="content" class="columns"></div>
-      <ul class="pagination" id="pagination"></ul>
+  {{#if hasDatabaseError}}
+    <div>
+      Sorry, there was a problem with the database:
+      <br />
+      {{theError}}
     </div>
-  </div>
+  {{else}}
+    {{#each videoclips}}
+      <div class="container">
+        <div class="columns">
+          <div id="content" class="columns">
+            <h1>{{vtitle}}</h1>
+            <p>{{vdesc}}</p>
+          </div>
+          <ul class="pagination" id="pagination"></ul>
+        </div>
+      </div>
+    {{/each}}
+  {{/if}}
   <script src="/js/videos.js" defer></script>
 
 </div>

@@ -292,12 +292,63 @@ app.get("/", (request, response) => {
     style: "home.css",
   });
 });
+// app.get("/videos", (request, response) => {
+//   response.render("videos.handlebars", {
+//     title: "Videos",
+//     style: "videos.css",
+//   });
+// });
+
 app.get("/videos", (request, response) => {
-  response.render("videos.handlebars", {
-    title: "Videos",
-    style: "videos.css",
+  db.all("SELECT * FROM videoclip", (error, theVideoclips) => {
+    const model = {
+      title: "Videos",
+      style: "videos.css",
+      hasDatabaseError: false,
+      theError: "",
+      videoclips: [],
+    };
+
+    if (error) {
+      model.hasDatabaseError = true;
+      model.theError = error;
+    } else {
+      model.videoclips = theVideoclips;
+    }
+
+    response.render("videos.handlebars", model);
   });
 });
+
+// app.get("/videos", (request, response) => {
+//   db.all("SELECT * FROM videoclip", (error, theVideoclips) => {
+//     if (error) {
+//       const model = {
+//         hasDatabaseError: true,
+//         theError: error,
+//         videoclips: [],
+//       };
+//       response.render("videos.handlebars", {
+//         title: "Videos",
+//         style: "videos.css",
+//         model: model,
+//       });
+//       console.log("eerste " + model);
+//     } else {
+//       const model = {
+//         hasDatabaseError: false,
+//         theError: "",
+//         videoclips: theVideoclips,
+//       };
+//       response.render("videos.handlebars", {
+//         title: "Videos",
+//         style: "videos.css",
+//         model: model,
+//       });
+//       console.log("tweede " + model);
+//     }
+//   });
+// });
 app.get("/video", (request, response) => {
   response.render("video.handlebars", {
     title: "Video",
