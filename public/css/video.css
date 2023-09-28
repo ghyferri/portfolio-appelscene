@@ -100,16 +100,18 @@ main {
 }
 
 .card {
-  border: solid 5px var(--primary);
-  box-shadow: 0 0 15px rgb(52, 29, 180);
+  margin-top: 2em;
+  border: solid 2px white;
+  color: white;
 }
 .card-body {
   border: 0;
-  background-color: white;
+  background-color: black;
 }
 
 .card-title {
   margin-bottom: 8px;
+  color: black;
 }
 .card-text {
   margin-bottom: 5px;
@@ -151,6 +153,9 @@ main {
 
 .video-container {
   margin: 20px;
+}
+.bio {
+  font-size: 28em;
 }
 
 @media screen and (max-width: 768px) {

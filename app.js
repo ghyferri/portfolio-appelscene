@@ -89,47 +89,56 @@ db.run(
         {
           id: "1",
           title: "Landen",
-          desc: "A song about the luxury lifestyle",
+          desc: "Embark on an unforgettable journey with Kleinevlam and Simski as they serenade you with their latest hit, an anthem for wanderlust and adventure. In this music video, the duo's harmonious voices and captivating storytelling transport you to exotic destinations, where they dream of jet-setting around the world. Watch as they metaphorically 'let a plane land' in their hearts and minds, embracing the spirit of exploration and wanderlust. Join us in this musical escape, and let your imagination take flight.",
           release: "24-02-2023",
-          link: "https://www.youtube.com/watch?v=0_RTEZ7MBOM",
+          link: "https://www.youtube.com/embed/0_RTEZ7MBOM?si=o11gmLJUY30iS1TF",
           image: "/img/landen_thumbnail.png",
           gid: "2",
         },
         {
           id: "2",
           title: "Bands",
-          desc: "A song about cars",
+          desc: "Ride along as he delves into the whirlwind of the rap game in 'Bands.' This music video captures the rapid ascent from the bottom to the top, where every day brings a new twist in the journey. Join us in this lyrical exploration of the fast-paced life in the world of hip-hop, where ambition knows no bounds",
           release: "11-08-2023",
-          link: "https://www.youtube.com/watch?v=Db7Rmm4Oqyc",
+          link: "https://www.youtube.com/embed/Db7Rmm4Oqyc?si=BABQy3oZGkMbdK8A",
           image: "/img/bands_thumbnail.png",
           gid: "2",
         },
         {
           id: "3",
           title: "Slide",
-          desc: "A song from 2 young uk rappers",
+          desc: "Dive into the gritty and raw world of UK rap with Rico Suave and Bex as they let it 'slide' in their latest collaboration. This dynamic duo brings their unique style and lyrical prowess to the forefront, delivering a hard-hitting track that showcases the essence of UK hip-hop. With sharp wordplay and unapologetic storytelling, they navigate the streets and share their experiences. Join us in this musical journey through the urban landscapes of the UK as these two artists make their mark in the rap scene.",
           release: "28-04-2023",
-          link: "https://www.youtube.com/watch?v=NWXNliUOHvA",
+          link: "https://www.youtube.com/embed/NWXNliUOHvA?si=9SaGBK7Sa25QFWXS",
           image: "/img/slide_thumbnail.png",
           gid: "5",
         },
         {
           id: "4",
           title: "Loopt Met Pijp",
-          desc: "2 drillers from Berchem owning the block",
+          desc: "Join Guaps and YoungDream as they navigate their daily walk through the neighborhood with a watchful eye. In a world where caution is paramount, this video captures their journey through the streets, highlighting the importance of vigilance and awareness. Explore the challenges and stories that unfold as they move through their community, reminding us all to stay safe and alert in the ever-changing urban landscape.",
           release: "07-09-2023",
-          link: "https://www.youtube.com/watch?v=WK4ovj8znPc",
+          link: "https://www.youtube.com/embed/WK4ovj8znPc?si=W2XHVmGLh07tDfxS",
           image: "/img/looptmetpijp_thumbnail.png",
           gid: "1",
         },
         {
           id: "5",
           title: "King Of The Castle",
-          desc: "A boy that is born to be the king of the castle",
+          desc: "Step into the vivid dreamscape of a young dreamer names Lil Olibol. Follow along as our protagonist envisions a world where he reigns as the king of the castle, exploring realms of imagination and ambition. Through evocative lyrics and enchanting visuals, this video takes you on a journey through the aspirations of a young heart. Join us in this enchanting tale of dreams and possibilities, where even the most ordinary of places can become a kingdom of wonder and adventure.",
           release: "28-09-2023",
-          link: "https://www.youtube.com/watch?v=scooMbR0XCA",
+          link: "https://www.youtube.com/embed/scooMbR0XCA?si=qOPg5BxXUiDWbx8s",
           image: "/img/kotc_thumbnail.png",
           gid: "4",
+        },
+        {
+          id: "6",
+          title: "Demon Time",
+          desc: "Enter the world of intrigue and secrecy with our latest creation. Join us as we dive into the shadows, where mysterious activities unfold under the cover of darkness. In this enigmatic tale, we explore the thrill of secrecy and the allure of the unknown. With haunting melodies and cryptic visuals, this video invites you to embrace the enigma and experience the thrill of the clandestine. Get ready for an adventure that will keep you on the edge of your seat, where every twist and turn leads to another layer of mystery.",
+          release: "07-04-2023",
+          link: "https://www.youtube.com/embed/NyDElPMGtMw?si=1DNrUB1xVQ9k-M7B",
+          image: "/img/demontime_thumbnail.png",
+          gid: "2",
         },
       ];
       // inserts projects
@@ -172,7 +181,7 @@ db.run(
           id: "1",
           name: "Kleinevlam",
           country: "Belgium",
-          desc: "Young boy from keerbergen, but begun in Mechelen",
+          desc: "Young boy from keerbergen, but began in Mechelen",
         },
         {
           id: "2",
@@ -203,6 +212,18 @@ db.run(
           name: "Youngdream",
           country: "Belgium",
           desc: "No school, only music",
+        },
+        {
+          id: "7",
+          name: "Rico Suave",
+          country: "Uk",
+          desc: "Know for being a madman",
+        },
+        {
+          id: "8",
+          name: "Ferno",
+          country: "Nl",
+          desc: "Manager aka the boss",
         },
       ];
       // inserts artist
@@ -268,6 +289,21 @@ db.run(
           vid: "5",
           aid: "5",
         },
+        {
+          id: "8",
+          vid: "3",
+          aid: "7",
+        },
+        {
+          id: "9",
+          vid: "6",
+          aid: "8",
+        },
+        {
+          id: "10",
+          vid: "6",
+          aid: "1",
+        },
       ];
       // inserts artistVideoclip
       artistVideoclips.forEach((oneartistVideoclip) => {
@@ -329,10 +365,11 @@ app.get("/videos", (request, response) => {
 app.get("/videos/:vid", (request, response) => {
   const videoId = request.params.vid;
   db.get(
-    `SELECT videoclip.*, GROUP_CONCAT(artist.aname, ' x ') AS anames, artist.*
+    `SELECT videoclip.*, GROUP_CONCAT(artist.aname, ' x ') AS anames, artist.*, genre.gname
     FROM videoclip 
     INNER JOIN artistVideoclip ON videoclip.vid = artistVideoclip.vid
     INNER JOIN artist ON artistVideoclip.aid = artist.aid
+    LEFT JOIN genre ON videoclip.gid = genre.gid
     WHERE videoclip.vid= ?
     GROUP BY videoclip.vid`,
     [videoId],
