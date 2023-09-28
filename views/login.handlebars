@@ -6,7 +6,7 @@
           <h4 class="card-title">Login</h4>
         </div>
         <div class="card-body">
-          <form>
+          <form action="/login-post" method="post" id="formlogin">
             <div class="form-group">
               <label class="form-label" for="username">Username</label>
               <input
@@ -27,9 +27,11 @@
                 placeholder="Enter your password"
               />
             </div>
-            <button class="btn my-3 custom-button btn-block" type="submit">
-              Login
-            </button>
+            <input
+              class="btn my-3 custom-button btn-block"
+              type="submit"
+              value="login"
+            />
           </form>
         </div>
       </div>

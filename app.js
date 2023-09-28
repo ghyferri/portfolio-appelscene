@@ -1,7 +1,20 @@
 const express = require("express"); // loads the express package
 const { engine } = require("express-handlebars"); // loads handlebars for Express
+const session = require("express-session"); // loads express session
+const bodyParser = require("body-parser");
 const port = 8080; // defines the port
 const app = express(); // creates the Express application
+const users = [
+  { username: "admin", password: "admin", isAdmin: true },
+  { username: "user", password: "user", isAdmin: false },
+];
+app.use(
+  session({
+    saveUninitialized: false,
+    resave: false,
+    secret: "this123IsASecret678Sentence",
+  })
+);
 
 // defines handlebars engine
 app.engine("handlebars", engine());
@@ -9,10 +22,11 @@ app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
 // defines the views directory
 app.set("views", "./views");
-
 // define static directory "public" to access css/ and img/
 app.use(express.static("public"));
-
+// body parser
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 // MODEL (DATA)
 const sqlite3 = require("sqlite3");
 const db = new sqlite3.Database("projects-gh.db");
@@ -327,6 +341,27 @@ db.run(
   }
 );
 
+// Creates a session
+app.get("/create-session", (request, response) => {
+  console.log("Route" + request.url);
+  let counter = 1;
+  if (request.session.counter) {
+    counter = request.session.counter + 1;
+  }
+  request.session.counter = counter;
+  request.session.firstName = "Ferri";
+  response.end();
+});
+app.get("/log-session", (request, response) => {
+  console.log("Route" + request.url);
+  console.log("Session: " + JSON.stringify(request.session));
+  const counter = parseInt(request.session.counter);
+  console.log("Number of visist: " + counter);
+  const fName = request.session.firstName;
+  console.log("hello, " + fName);
+  response.end();
+});
+
 // CONTROLLER (THE BOSS)
 app.get("/", (request, response) => {
   response.render("home.handlebars", {
@@ -403,10 +438,44 @@ app.get("/contact", (request, response) => {
     style: "contact.css",
   });
 });
+
+//login
 app.get("/login", (request, response) => {
   response.render("login.handlebars", {
     title: "Login",
     style: "login.css",
+  });
+});
+
+app.post("/login-post", (request, response) => {
+  const { username, password } = request.body;
+  const user = users.find(
+    (u) => u.username === username && u.password === password
+  );
+  console.log(user);
+  if (user) {
+    request.session.user = user;
+    response.redirect("/admin");
+  } else {
+    response.redirect("/404");
+  }
+});
+
+app.get("/admin", (request, response) => {
+  const user = request.session.user;
+  if (!user || !user.isAdmin) {
+    response.redirect("/");
+    return;
+  }
+  response.render("admin", { user });
+});
+
+app.get("/logout", (request, response) => {
+  request.session.destroy((err) => {
+    if (err) {
+      console.error(err);
+    }
+    response.redirect("/");
   });
 });
 
