@@ -101,7 +101,7 @@ db.run(
           desc: "A song about cars",
           release: "11-08-2023",
           link: "https://www.youtube.com/watch?v=Db7Rmm4Oqyc",
-          image: "/img/landen_thumbnail.png",
+          image: "/img/bands_thumbnail.png",
           gid: "2",
         },
         {
@@ -110,7 +110,7 @@ db.run(
           desc: "A song from 2 young uk rappers",
           release: "28-04-2023",
           link: "https://www.youtube.com/watch?v=NWXNliUOHvA",
-          image: "/img/landen_thumbnail.png",
+          image: "/img/slide_thumbnail.png",
           gid: "5",
         },
         {
@@ -128,7 +128,7 @@ db.run(
           desc: "A boy that is born to be the king of the castle",
           release: "28-09-2023",
           link: "https://www.youtube.com/watch?v=scooMbR0XCA",
-          image: "/img/landen_thumbnail.png",
+          image: "/img/kotc_thumbnail.png",
           gid: "4",
         },
       ];
@@ -298,12 +298,6 @@ app.get("/", (request, response) => {
     style: "home.css",
   });
 });
-// app.get("/videos", (request, response) => {
-//   response.render("videos.handlebars", {
-//     title: "Videos",
-//     style: "videos.css",
-//   });
-// });
 
 app.get("/videos", (request, response) => {
   db.all(
@@ -311,7 +305,8 @@ app.get("/videos", (request, response) => {
       FROM videoclip 
       INNER JOIN artistVideoclip ON videoclip.vid = artistVideoclip.vid
       INNER JOIN artist ON artistVideoclip.aid = artist.aid
-      GROUP BY videoclip.vid`,
+      GROUP BY videoclip.vid
+      ORDER BY videoclip.vtitle`,
     (error, theVideoclips) => {
       const model = {
         title: "Videos",
@@ -320,7 +315,6 @@ app.get("/videos", (request, response) => {
         theError: "",
         videoclips: [],
       };
-
       if (error) {
         model.hasDatabaseError = true;
         model.theError = error;
@@ -360,12 +354,6 @@ app.get("/videos/:vid", (request, response) => {
   );
 });
 
-app.get("/video", (request, response) => {
-  response.render("video.handlebars", {
-    title: "Video",
-    style: "video.css",
-  });
-});
 app.get("/about", (request, response) => {
   response.render("about.handlebars", {
     title: "About",

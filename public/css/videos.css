@@ -94,7 +94,7 @@ main {
 
 .card {
   border: solid 5px var(--primary);
-
+  background-color: var(--background);
   box-shadow: 0 0 15px rgb(52, 29, 180);
 }
 .card-body {
@@ -116,6 +116,13 @@ main {
 }
 img {
   width: 100%;
+}
+.card-titles {
+  font-size: 1.7em;
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+  color: var(--text);
 }
 @media screen and (max-width: 768px) {
   .nav-links {
