@@ -1,0 +1,40 @@
+<div id="main">
+  <h2>Welcome, {{user.username}}!</h2>
+  <div class="container">
+    <h1>Manage projects</h1>
+    <section>
+      <h2>Items</h2>
+      <ul class="list">
+        {{#each items}}
+          <li class="list-item" style="color: white;">
+            {{vtitle}}
+            <div class="float-right">
+              <a href="/edit/{{id}}">Edit</a>
+              |
+              <a href="/delete/{{id}}">Delete</a>
+            </div>
+          </li>
+        {{/each}}
+      </ul>
+    </section>
+
+    {{! <!-- Create Section -->
+    <section>
+      <h2>Create Item</h2>
+      <form action="/create" method="POST">
+        <div class="form-group">
+          <label for="name">Name:</label>
+          <input
+            type="text"
+            class="form-input"
+            id="name"
+            name="name"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+      </form>
+    </section> }}
+  </div>
+
+</div>

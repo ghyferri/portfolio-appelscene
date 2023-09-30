@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const port = 8080; // defines the port
 const app = express(); // creates the Express application
 
+// session setup
 app.use(
   session({
     saveUninitialized: false,
@@ -13,7 +14,6 @@ app.use(
     secret: "this123IsASecret678Sentence",
   })
 );
-
 // defines handlebars engine
 app.engine("handlebars", engine());
 // defines the view engine to be handlebars
@@ -24,7 +24,7 @@ app.set("views", "./views");
 app.use(express.static("public"));
 // body parser
 
-// Define a function to check if a user is an admin
+// function to check if a user is an admin
 function isAdmin(req, res, next) {
   if (req.session && req.session.user && req.session.user.is_admin) {
     // User is an admin, allow access
@@ -39,13 +39,14 @@ function isAdmin(req, res, next) {
     });
   }
 }
+// middelware for admin
 app.use((req, res, next) => {
   req.isAdmin = req.session.user ? req.session.user.is_admin : false;
   next();
 });
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
 // MODEL (DATA)
 const sqlite3 = require("sqlite3");
 const db = new sqlite3.Database("projects-gh.db");
@@ -373,27 +374,6 @@ db.serialize(() => {
   adminUser.finalize();
 });
 
-// Creates a session
-app.get("/create-session", (request, response) => {
-  console.log("Route" + request.url);
-  let counter = 1;
-  if (request.session.counter) {
-    counter = request.session.counter + 1;
-  }
-  request.session.counter = counter;
-  request.session.firstName = "Ferri";
-  response.end();
-});
-app.get("/log-session", (request, response) => {
-  console.log("Route" + request.url);
-  console.log("Session: " + JSON.stringify(request.session));
-  const counter = parseInt(request.session.counter);
-  console.log("Number of visist: " + counter);
-  const fName = request.session.firstName;
-  console.log("hello, " + fName);
-  response.end();
-});
-
 // CONTROLLER (THE BOSS)
 app.get("/", (request, response) => {
   response.render("home.handlebars", {
@@ -519,7 +499,7 @@ app.post("/login-post", (req, res) => {
         is_admin: user.is_admin,
       };
 
-      res.redirect("/admin");
+      res.redirect("/dashboard");
     }
   );
 });
@@ -529,18 +509,35 @@ app.get("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-app.get("/admin", isAdmin, (request, response) => {
+app.get("/dashboard", isAdmin, (request, response) => {
   const user = request.session.user;
   const isAdmin = request.session.user ? request.session.user.is_admin : false;
   if (!user || user.isAdmin == 0) {
     response.redirect("/");
     return;
   }
-  response.render("admin.handlebars", {
-    user: request.session.user,
-    style: "home.css",
-    is_admin: isAdmin,
-  });
+  db.all(
+    `SELECT videoclip.*, GROUP_CONCAT(artist.aname, ' x ') AS anames
+      FROM videoclip 
+      INNER JOIN artistVideoclip ON videoclip.vid = artistVideoclip.vid
+      INNER JOIN artist ON artistVideoclip.aid = artist.aid
+      GROUP BY videoclip.vid
+      ORDER BY videoclip.vtitle`,
+    (error, theVideoclips) => {
+      let errorDashboard = false;
+      if (error) {
+        errorDashboard = true;
+      }
+      response.render("dashboard.handlebars", {
+        title: "Dashboard",
+        style: "dashboard.css",
+        user: request.session.user,
+        is_admin: request.isAdmin,
+        items: theVideoclips,
+        hasDatabaseError: errorDashboard,
+      });
+    }
+  );
 });
 
 // defines the final default route 404 NOT FOUND
