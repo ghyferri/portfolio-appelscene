@@ -9,12 +9,13 @@
       <li><a href="/videos">Videos</a></li>
       <li><a href="/about">About</a></li>
       <li><a href="/contact">Contact</a></li>
-      <li><a href="/login">Login</a></li>
-
-      {{!-- {{#if user}}
+      {{#if is_admin}}
         <li><a href="/logout">Logout</a></li>
       {{else}}
         <li><a href="/login">Login</a></li>
+      {{/if}}
+      {{!-- {{#if user}}
+      {{else}}
       {{/if}} --}}
     </ul>
   </nav>

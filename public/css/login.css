@@ -39,6 +39,10 @@ header {
 .logo-title img {
   margin-right: 10px;
 }
+.error {
+  color: rgb(191, 11, 11);
+  font-size: 1em;
+}
 
 /* Style the navigation links */
 .nav-links ul {

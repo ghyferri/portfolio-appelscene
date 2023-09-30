@@ -3,6 +3,7 @@
     <div class="column col-4 col-sm-12 col-mx-auto">
       <div class="card">
         <div class="card-header">
+
           <h4 class="card-title">Login</h4>
         </div>
         <div class="card-body">
@@ -27,6 +28,9 @@
                 placeholder="Enter your password"
               />
             </div>
+            {{#if error}}
+              <p class="error">{{error}}</p>
+            {{/if}}
             <input
               class="btn my-3 custom-button btn-block"
               type="submit"
@@ -34,6 +38,7 @@
             />
           </form>
         </div>
+
       </div>
     </div>
   </div>

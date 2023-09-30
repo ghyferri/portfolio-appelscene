@@ -2,12 +2,10 @@ const express = require("express"); // loads the express package
 const { engine } = require("express-handlebars"); // loads handlebars for Express
 const session = require("express-session"); // loads express session
 const bodyParser = require("body-parser");
+const bcrypt = require("bcrypt");
 const port = 8080; // defines the port
 const app = express(); // creates the Express application
-const users = [
-  { username: "admin", password: "admin", isAdmin: true },
-  { username: "user", password: "user", isAdmin: false },
-];
+
 app.use(
   session({
     saveUninitialized: false,
@@ -25,6 +23,27 @@ app.set("views", "./views");
 // define static directory "public" to access css/ and img/
 app.use(express.static("public"));
 // body parser
+
+// Define a function to check if a user is an admin
+function isAdmin(req, res, next) {
+  if (req.session && req.session.user && req.session.user.is_admin) {
+    // User is an admin, allow access
+    return next();
+  } else {
+    // User is not an admin, deny access
+    res.status(403).render("error.handlebars", {
+      ErrorHeader: "403: ACCESS DENIED",
+      ErrorBody: "Sorry, you have no permission to access this website.",
+      title: "Error 403",
+      style: "error.css",
+    });
+  }
+}
+app.use((req, res, next) => {
+  req.isAdmin = req.session.user ? req.session.user.is_admin : false;
+  next();
+});
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // MODEL (DATA)
@@ -341,6 +360,19 @@ db.run(
   }
 );
 
+// Initialize the database with a 'users' table
+db.serialize(() => {
+  db.run(
+    "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, is_admin INTEGER)"
+  );
+  const adminPassword = bcrypt.hashSync("admin", 10); // Hash the admin password
+  const adminUser = db.prepare(
+    "INSERT OR IGNORE INTO users (username, password, is_admin) VALUES (?, ?, ?)"
+  );
+  adminUser.run("admin", adminPassword, 1); // '1' indicates that this user is an admin
+  adminUser.finalize();
+});
+
 // Creates a session
 app.get("/create-session", (request, response) => {
   console.log("Route" + request.url);
@@ -367,6 +399,7 @@ app.get("/", (request, response) => {
   response.render("home.handlebars", {
     title: "Home",
     style: "home.css",
+    is_admin: request.isAdmin,
   });
 });
 
@@ -385,6 +418,7 @@ app.get("/videos", (request, response) => {
         hasDatabaseError: false,
         theError: "",
         videoclips: [],
+        is_admin: request.isAdmin,
       };
       if (error) {
         model.hasDatabaseError = true;
@@ -418,6 +452,8 @@ app.get("/videos/:vid", (request, response) => {
         const model = {
           title: "Video",
           style: "video.css",
+          is_admin: request.isAdmin,
+
           videoclip: videoclip,
         };
         response.render("video.handlebars", model);
@@ -430,12 +466,16 @@ app.get("/about", (request, response) => {
   response.render("about.handlebars", {
     title: "About",
     style: "about.css",
+    is_admin: request.isAdmin,
   });
 });
 app.get("/contact", (request, response) => {
+  const isAdmin = request.session.user ? request.session.user.is_admin : false;
+
   response.render("contact.handlebars", {
     title: "Contact",
     style: "contact.css",
+    is_admin: request.isAdmin,
   });
 });
 
@@ -444,44 +484,71 @@ app.get("/login", (request, response) => {
   response.render("login.handlebars", {
     title: "Login",
     style: "login.css",
+    is_admin: request.isAdmin,
   });
 });
 
-app.post("/login-post", (request, response) => {
-  const { username, password } = request.body;
-  const user = users.find(
-    (u) => u.username === username && u.password === password
+// Handle the login form submission
+app.post("/login-post", (req, res) => {
+  const { username, password } = req.body;
+
+  // Check the user's credentials in the database
+  db.get(
+    "SELECT * FROM users WHERE username = ? AND is_admin = 1",
+    username,
+    (err, user) => {
+      if (err) {
+        console.error(err.message);
+        return res.status(500).send("Internal Server Error");
+      }
+
+      if (!user || !bcrypt.compareSync(password, user.password)) {
+        // User not found or password incorrect
+        const loginError = "* Wrong username or password";
+        return res.render("login.handlebars", {
+          error: loginError,
+          style: "login.css",
+          title: "login",
+        });
+      }
+
+      // Store user information in the session
+      req.session.user = {
+        id: user.id,
+        username: user.username,
+        is_admin: user.is_admin,
+      };
+
+      res.redirect("/admin");
+    }
   );
-  console.log(user);
-  if (user) {
-    request.session.user = user;
-    response.redirect("/admin");
-  } else {
-    response.redirect("/404");
-  }
 });
 
-app.get("/admin", (request, response) => {
+app.get("/logout", (req, res) => {
+  req.session.destroy();
+  res.redirect("/login");
+});
+
+app.get("/admin", isAdmin, (request, response) => {
   const user = request.session.user;
-  if (!user || !user.isAdmin) {
+  const isAdmin = request.session.user ? request.session.user.is_admin : false;
+  if (!user || user.isAdmin == 0) {
     response.redirect("/");
     return;
   }
-  response.render("admin", { user });
-});
-
-app.get("/logout", (request, response) => {
-  request.session.destroy((err) => {
-    if (err) {
-      console.error(err);
-    }
-    response.redirect("/");
+  response.render("admin.handlebars", {
+    user: request.session.user,
+    style: "home.css",
+    is_admin: isAdmin,
   });
 });
 
 // defines the final default route 404 NOT FOUND
 app.use(function (req, res) {
-  res.status(404).render("404.handlebars", {
+  res.status(404).render("error.handlebars", {
+    ErrorHeader: "404: NOT FOUND",
+    ErrorBody:
+      "Sorry, the requested page was not found on this site. Please consider going back to the",
     title: "Error 404",
     style: "error.css",
   });
