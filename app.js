@@ -574,6 +574,32 @@ app.get("/dashboard", (request, response) => {
   );
 });
 
+app.get("/dashboard/delete/:id", (request, response) => {
+  const id = request.params.id;
+  if (request.session.isLoggedIn == true && request.session.isAdmin == true) {
+    db.run(
+      "DELETE FROM videoclip WHERE vid=?",
+      [id],
+      function (error, theVideoclips) {
+        if (error) {
+          // const model = {
+          //   dbError: true,
+          //   theError: error,
+          //   isLoggedIn: request.session.isLoggedIn,
+          //   name: request.session.username,
+          //   isAdmin: request.session.isAdmin,
+          // };
+          return response.status(500).send("Internal Server Error");
+        } else {
+          response.redirect("/dashboard");
+        }
+      }
+    );
+  } else {
+    response.redirect("/login");
+  }
+});
+
 // defines the final default route 404 NOT FOUND
 app.use(function (req, res) {
   res.status(404).render("error.handlebars", {
