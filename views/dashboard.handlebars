@@ -1,25 +1,56 @@
-<div id="main">
-  <h2>Welcome, {{user.username}}!</h2>
+<div id="main" class="container">
   <div class="container">
-    <h1>Manage projects</h1>
+    <h1>Welcome, <span class="gradient-text">{{user.username}}</span> !</h1>
     <section>
-      <h2>Items</h2>
+      <h2>Videoclips</h2>
       <ul class="list">
         {{#each items}}
-          <li class="list-item" style="color: white;">
-            {{vtitle}}
-            <div class="float-right">
-              <a href="/edit/{{id}}">Edit</a>
-              |
-              <a href="/delete/{{id}}">Delete</a>
+          <div class="accordion">
+            <input
+              type="checkbox"
+              id="accordion-{{vid}}"
+              name="accordion-checkbox"
+              hidden
+            />
+            <label class="accordion-header" for="accordion-{{vid}}">
+              <i class="icon icon-arrow-right mr-1"></i>
+              {{vtitle}}
+              -
+              {{anames}}
+
+              <div class="float-right">
+                <a href="/edit/{{id}}">Edit</a>
+                |
+                <a href="/delete/{{id}}">Delete</a>
+              </div>
+            </label>
+
+            <div class="accordion-body">
+              <p>yo</p>
             </div>
-          </li>
+          </div>
+
         {{/each}}
       </ul>
+      <div class="accordion">
+        <input
+          type="checkbox"
+          id="accordion-1"
+          name="accordion-checkbox"
+          hidden
+        />
+        <label class="accordion-header" for="accordion-1">
+          <i class="icon icon-arrow-right mr-1"></i>
+          Title
+        </label>
+        <div class="accordion-body">
+          <p>yo</p>
+        </div>
+      </div>
     </section>
 
-    {{! <!-- Create Section -->
-    <section>
+    <!-- Create Section -->
+    {{! <section>
       <h2>Create Item</h2>
       <form action="/create" method="POST">
         <div class="form-group">

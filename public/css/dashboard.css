@@ -21,6 +21,23 @@ ul {
   color: var(--text);
 }
 
+.container {
+  width: 80%;
+}
+.accordion-header {
+  color: white;
+  background: transparent;
+  border: solid 1.25px white;
+}
+.accordion-body {
+  background-color: rgb(67, 67, 67);
+  color: white;
+}
+.i {
+  color: white;
+  background-color: white;
+}
+
 /* Style the header */
 header {
   display: flex;
@@ -97,88 +114,12 @@ main {
   height: 100%;
 }
 
-.center-post {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-.content-left-align {
-  text-align: left;
-}
-
-.content-right-align {
-  align-items: center;
-}
-
-.custom-button {
-  background-color: transparent; /* Change this to your desired color */
-  color: #ffffff; /* Change this to the text color you prefer */
-}
-.custom-button:hover {
-  background-color: var(--accent);
-}
-.image-container {
-  display: flex;
-  justify-content: space-around;
-}
-.image-container img {
-  width: 90%; /* Adjust the width as needed */
-  max-width: 100%; /* Ensure images don't exceed their container's width */
-  box-shadow: 0 0 25px rgb(52, 29, 180);
-}
-.orange_shadow {
-  box-shadow: 0 0 25px orange;
-}
-.container {
-  margin-bottom: 10%;
-}
-
-.hero_img {
-  border: solid var(--primary) 7px;
-  border-radius: 25px;
-}
-
 .gradient-footer {
   /* background: linear-gradient(0deg, var(--primary), var(--background)); */
   padding: 20px; /* Add some padding for spacing */
   text-align: center; /* Center-align the text */
   color: #fff; /* Set the text color to white */
   font-size: 14px; /* Adjust the font size as needed */
-}
-
-.circle h2 {
-  font-size: 18px; /* Adjust title font size */
-  margin: 5px 0; /* Add margin around title */
-}
-
-.circle p {
-  font-size: 14px; /* Adjust description font size */
-}
-.circle-wrapper {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  height: 100%;
-}
-.emoji {
-  font-size: 5em;
-}
-/* Center the text and social icons vertically and horizontally */
-.text-center {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.yt {
-  width: 90%;
-}
-.ytimg {
-  display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
 }
 
 /* Media query for small screens */
@@ -205,15 +146,5 @@ main {
   /* Hide hamburger menu when links are displayed */
   .hamburger-menu.active {
     display: none;
-  }
-  .content-left-align {
-    align-items: center;
-    text-align: center;
-    margin-bottom: 3em;
-  }
-  .content-right-align {
-    align-items: center;
-    text-align: center;
-    margin-bottom: 3em;
   }
 }

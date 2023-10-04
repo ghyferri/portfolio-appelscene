@@ -3,17 +3,17 @@ const { engine } = require("express-handlebars"); // loads handlebars for Expres
 const session = require("express-session"); // loads express session
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
+const connectSqlite3 = require("connect-sqlite3");
 const port = 8080; // defines the port
 const app = express(); // creates the Express application
-
-// session setup
-app.use(
-  session({
-    saveUninitialized: false,
-    resave: false,
-    secret: "this123IsASecret678Sentence",
-  })
-);
+// // session setup
+// app.use(
+//   session({
+//     saveUninitialized: false,
+//     resave: false,
+//     secret: "this123IsASecret678Sentence",
+//   })
+// );
 // defines handlebars engine
 app.engine("handlebars", engine());
 // defines the view engine to be handlebars
@@ -25,27 +25,40 @@ app.use(express.static("public"));
 // body parser
 
 // function to check if a user is an admin
-function isAdmin(req, res, next) {
-  if (req.session && req.session.user && req.session.user.is_admin) {
-    // User is an admin, allow access
-    return next();
-  } else {
-    // User is not an admin, deny access
-    res.status(403).render("error.handlebars", {
-      ErrorHeader: "403: ACCESS DENIED",
-      ErrorBody: "Sorry, you have no permission to access this website.",
-      title: "Error 403",
-      style: "error.css",
-    });
-  }
-}
+// function is_admin(req, res, next) {
+//   if (req.session && req.session.user && req.session.user.isa) {
+//     // User is an admin, allow access
+//     return next();
+//   } else {
+//     console.log(user);
+//     // User is not an admin, deny access
+//     res.status(403).render("error.handlebars", {
+//       ErrorHeader: "403: ACCESS DENIED",
+//       ErrorBody: "Sorry, you have no permission to access this website.",
+//       title: "Error 403",
+//       style: "error.css",
+//     });
+//   }
+// }
 // middelware for admin
-app.use((req, res, next) => {
-  req.isAdmin = req.session.user ? req.session.user.is_admin : false;
-  next();
-});
+// app.use((req, res, next) => {
+//   req.isAdmin = req.session.user ? req.session.user.is_admin : false;
+//   next();
+// });
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+const SQLiteStore = connectSqlite3(session);
+
+// define session
+app.use(
+  session({
+    store: new SQLiteStore({ db: "session-db.db" }),
+    saveUninitialized: false,
+    resave: false,
+    secret: "this!@123I%%%%sASecret678Sentence@!!!#",
+  })
+);
 
 // MODEL (DATA)
 const sqlite3 = require("sqlite3");
@@ -364,11 +377,11 @@ db.run(
 // Initialize the database with a 'users' table
 db.serialize(() => {
   db.run(
-    "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, is_admin INTEGER)"
+    "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, isAdmin INTEGER)"
   );
   const adminPassword = bcrypt.hashSync("admin", 10); // Hash the admin password
   const adminUser = db.prepare(
-    "INSERT OR IGNORE INTO users (username, password, is_admin) VALUES (?, ?, ?)"
+    "INSERT OR IGNORE INTO users (username, password, isAdmin) VALUES (?, ?, ?)"
   );
   adminUser.run("admin", adminPassword, 1); // '1' indicates that this user is an admin
   adminUser.finalize();
@@ -379,7 +392,9 @@ app.get("/", (request, response) => {
   response.render("home.handlebars", {
     title: "Home",
     style: "home.css",
-    is_admin: request.isAdmin,
+    isLoggedIn: request.session.isLoggedIn,
+    name: request.session.username,
+    isAdmin: request.session.isAdmin,
   });
 });
 
@@ -398,7 +413,9 @@ app.get("/videos", (request, response) => {
         hasDatabaseError: false,
         theError: "",
         videoclips: [],
-        is_admin: request.isAdmin,
+        isLoggedIn: request.session.isLoggedIn,
+        name: request.session.username,
+        isAdmin: request.session.isAdmin,
       };
       if (error) {
         model.hasDatabaseError = true;
@@ -432,7 +449,9 @@ app.get("/videos/:vid", (request, response) => {
         const model = {
           title: "Video",
           style: "video.css",
-          is_admin: request.isAdmin,
+          isLoggedIn: request.session.isLoggedIn,
+          name: request.session.username,
+          isAdmin: request.session.isAdmin,
 
           videoclip: videoclip,
         };
@@ -446,16 +465,18 @@ app.get("/about", (request, response) => {
   response.render("about.handlebars", {
     title: "About",
     style: "about.css",
-    is_admin: request.isAdmin,
+    isLoggedIn: request.session.isLoggedIn,
+    name: request.session.username,
+    isAdmin: request.session.isAdmin,
   });
 });
 app.get("/contact", (request, response) => {
-  const isAdmin = request.session.user ? request.session.user.is_admin : false;
-
   response.render("contact.handlebars", {
     title: "Contact",
     style: "contact.css",
-    is_admin: request.isAdmin,
+    isLoggedIn: request.session.isLoggedIn,
+    name: request.session.username,
+    isAdmin: request.session.isAdmin,
   });
 });
 
@@ -464,7 +485,9 @@ app.get("/login", (request, response) => {
   response.render("login.handlebars", {
     title: "Login",
     style: "login.css",
-    is_admin: request.isAdmin,
+    isLoggedIn: request.session.isLoggedIn,
+    name: request.session.username,
+    isAdmin: request.session.isAdmin,
   });
 });
 
@@ -474,7 +497,7 @@ app.post("/login-post", (req, res) => {
 
   // Check the user's credentials in the database
   db.get(
-    "SELECT * FROM users WHERE username = ? AND is_admin = 1",
+    "SELECT * FROM users WHERE username = ? AND isAdmin = 1",
     username,
     (err, user) => {
       if (err) {
@@ -485,6 +508,9 @@ app.post("/login-post", (req, res) => {
       if (!user || !bcrypt.compareSync(password, user.password)) {
         // User not found or password incorrect
         const loginError = "* Wrong username or password";
+        req.session.isAdmin = false;
+        req.session.isLoggedIn = false;
+        req.session.name = "";
         return res.render("login.handlebars", {
           error: loginError,
           style: "login.css",
@@ -492,14 +518,17 @@ app.post("/login-post", (req, res) => {
         });
       }
 
-      // Store user information in the session
-      req.session.user = {
-        id: user.id,
-        username: user.username,
-        is_admin: user.is_admin,
-      };
+      // // Store user information in the session
+      // req.session.user = {
+      //   id: user.id,
+      //   username: user.username,
+      //   is_admin: user.is_admin,
+      // };
+      req.session.isAdmin = 1;
+      req.session.isLoggedIn = true;
+      req.session.name = username;
 
-      res.redirect("/dashboard");
+      res.redirect("/");
     }
   );
 });
@@ -509,11 +538,15 @@ app.get("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-app.get("/dashboard", isAdmin, (request, response) => {
-  const user = request.session.user;
-  const isAdmin = request.session.user ? request.session.user.is_admin : false;
-  if (!user || user.isAdmin == 0) {
-    response.redirect("/");
+app.get("/dashboard", (request, response) => {
+  if (!request.session.isLoggedIn || request.session.isAdmin == 0) {
+    //  User is not an admin, deny access
+    response.status(403).render("error.handlebars", {
+      ErrorHeader: "403: ACCESS DENIED",
+      ErrorBody: "Sorry, you have no permission to access this website.",
+      title: "Error 403",
+      style: "error.css",
+    });
     return;
   }
   db.all(
@@ -531,10 +564,11 @@ app.get("/dashboard", isAdmin, (request, response) => {
       response.render("dashboard.handlebars", {
         title: "Dashboard",
         style: "dashboard.css",
-        user: request.session.user,
-        is_admin: request.isAdmin,
         items: theVideoclips,
         hasDatabaseError: errorDashboard,
+        isLoggedIn: request.session.isLoggedIn,
+        name: request.session.username,
+        isAdmin: request.session.isAdmin,
       });
     }
   );
