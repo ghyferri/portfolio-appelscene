@@ -4,6 +4,7 @@
 
       <h2>Videoclips</h2>
       <ul class="list">
+
         {{#each items}}
           <div class="accordion">
             <input
@@ -115,14 +116,14 @@
                       <label class="form-label">Genre</label>
                     </div>
                     <div class="col-9 col-sm-12">
-                      {{!-- <select name="gid" id="gid" required="required">
-                        <option value="1" {{#if(theGenreD gid)}} selected="selected"{{/if}}>Drill</option>
-                        <option value="2">Hiphop</option>
-                        <option value="3">Pop</option>
-                        <option value="4">Underground</option>
-                        <option value="5">Uk</option>
-                        <option value="6">French</option>
-                      </select> --}}
+                      <select name="gid" id="gid" required="required">
+                        <option value="1" {{#if (theGenreD gid)}} selected="selected" {{/if}}>Drill</option>
+                        <option value="2" {{#if (theGenreH gid)}} selected="selected"  {{/if}}>Hiphop</option>
+                        <option value="3" {{#if (theGenreP gid)}} selected="selected"  {{/if}}>Pop</option>
+                        <option value="4" {{#if (theGenreU gid)}} selected="selected"  {{/if}}>Underground</option>
+                        <option value="5" {{#if (theGenreUK gid)}} selected="selected"  {{/if}}>Uk</option>
+                        <option value="6" {{#if (theGenreF gid)}} selected="selected"  {{/if}}>French</option>
+                      </select>
                     </div>
                   </fieldset>
                   <input type="submit" class="btn btn-primary" value="Save" />
@@ -132,21 +133,6 @@
           </div>
         {{/each}}
       </ul>
-      <div class="accordion">
-        <input
-          type="checkbox"
-          id="accordion-1"
-          name="accordion-checkbox"
-          hidden
-        />
-        <label class="accordion-header" for="accordion-1">
-          <i class="icon icon-arrow-right mr-1"></i>
-          Title
-        </label>
-        <div class="accordion-body">
-          <p>yo</p>
-        </div>
-      </div>
     </section>
     <br /><br />
 
@@ -155,87 +141,87 @@
       <form action="/dashboard/new" method="post">
         <fieldset>
           <div class="col-3 col-sm-12">
-            <label class="form-label" for="aname">Artist</label>
+            <label class="form-label" for="anamenew">Artist</label>
           </div>
           <div class="col-9 col-sm-12">
             <input
               class="form-input"
               type="text"
               required="required"
-              id="aname"
-              name="aname"
+              id="anamenew"
+              name="anamenew"
               placeholder="Artist"
             />
           </div>
           <div class="col-3 col-sm-12">
-            <label class="form-label" for="vtitle">Videoclip title</label>
+            <label class="form-label" for="vtitlenew">Videoclip title</label>
           </div>
           <div class="col-9 col-sm-12">
             <input
               class="form-input"
               type="text"
-              name="vtitle"
-              id="vtitle"
+              name="vtitlenew"
+              id="vtitlenew"
               placeholder="Title"
               required="required"
             />
           </div>
           <div class="col-3 col-sm-12">
-            <label class="form-label" for="vrelease">Release date</label>
+            <label class="form-label" for="vreleasenew">Release date</label>
           </div>
           <div class="col-9 col-sm-12">
             <input
               class="form-input"
               type="date"
-              id="vrelease"
-              name="vrelease"
+              id="vreleasenew"
+              name="vreleasenew"
               placeholder="Release date"
               required="required"
             />
           </div>
           <div class="col-3 col-sm-12">
-            <label class="form-label" for="vdesc">Description</label>
+            <label class="form-label" for="vdescnew">Description</label>
           </div>
           <div class="col-9 col-sm-12">
             <textarea
-              id="vdesc"
-              name="vdesc"
+              id="vdescnew"
+              name="vdescnew"
               cols="70"
               rows="10"
               required="required"
             ></textarea>
           </div>
           <div class="col-3 col-sm-12">
-            <label class="form-label" for="vlink">Link</label>
+            <label class="form-label" for="vlinknew">Link</label>
           </div>
           <div class="col-9 col-sm-12">
             <input
               class="form-input"
               type="text"
               required="required"
-              id="vlink"
-              name="vlink"
+              id="vlinknew"
+              name="vlinknew"
               placeholder="Youtube link"
             />
           </div>
           <div class="col-3 col-sm-12">
-            <label class="form-label" for="vimage">Image url</label>
+            <label class="form-label" for="vimagenew">Image url</label>
           </div>
           <div class="col-9 col-sm-12">
             <input
               class="form-input"
               required="required"
-              name="vimage"
+              name="vimagenew"
               type="text"
-              id="vimage"
+              id="vimagenew"
               placeholder="Link to img url /img/"
             />
           </div>
           <div class="col-3 col-sm-12">
-            <label class="form-label" for="gid">Genre</label>
+            <label class="form-label" for="gidnew">Genre</label>
           </div>
           <div class="col-9 col-sm-12">
-            <select name="gid" id="gid" required="required">
+            <select name="gidnew" id="gidnew" required="required">
               <option value="1">Drill</option>
               <option value="2">Hiphop</option>
               <option value="3">Pop</option>

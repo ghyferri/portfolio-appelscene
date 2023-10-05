@@ -1,21 +1,39 @@
 const express = require("express"); // loads the express package
-const { engine } = require("express-handlebars"); // loads handlebars for Express
+const exphbs = require("express-handlebars"); // loads handlebars for Express
 const session = require("express-session"); // loads express session
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 const connectSqlite3 = require("connect-sqlite3");
 const port = 8080; // defines the port
 const app = express(); // creates the Express application
-// // session setup
-// app.use(
-//   session({
-//     saveUninitialized: false,
-//     resave: false,
-//     secret: "this123IsASecret678Sentence",
-//   })
-// );
+
+const hbs = exphbs.create({
+  // Specify your custom helpers here
+  helpers: {
+    theGenreD(value) {
+      return value == "1";
+    },
+    theGenreH(value) {
+      return value == "2";
+    },
+    theGenreP(value) {
+      return value == "3";
+    },
+    theGenreU(value) {
+      return value == "4";
+    },
+    theGenreUK(value) {
+      return value == "5";
+    },
+    theGenreF(value) {
+      return value == "6";
+    },
+    // Add more custom helpers as needed
+  },
+});
+
 // defines handlebars engine
-app.engine("handlebars", engine());
+app.engine("handlebars", hbs.engine);
 // defines the view engine to be handlebars
 app.set("view engine", "handlebars");
 // defines the views directory
@@ -45,6 +63,7 @@ app.use(express.static("public"));
 //   req.isAdmin = req.session.user ? req.session.user.is_admin : false;
 //   next();
 // });
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -452,7 +471,6 @@ app.get("/videos/:vid", (request, response) => {
           isLoggedIn: request.session.isLoggedIn,
           name: request.session.username,
           isAdmin: request.session.isAdmin,
-
           videoclip: videoclip,
         };
         response.render("video.handlebars", model);
@@ -470,6 +488,7 @@ app.get("/about", (request, response) => {
     isAdmin: request.session.isAdmin,
   });
 });
+
 app.get("/contact", (request, response) => {
   response.render("contact.handlebars", {
     title: "Contact",
@@ -504,7 +523,6 @@ app.post("/login-post", (req, res) => {
         console.error(err.message);
         return res.status(500).send("Internal Server Error");
       }
-
       if (!user || !bcrypt.compareSync(password, user.password)) {
         // User not found or password incorrect
         const loginError = "* Wrong username or password";
@@ -517,13 +535,6 @@ app.post("/login-post", (req, res) => {
           title: "login",
         });
       }
-
-      // // Store user information in the session
-      // req.session.user = {
-      //   id: user.id,
-      //   username: user.username,
-      //   is_admin: user.is_admin,
-      // };
       req.session.isAdmin = 1;
       req.session.isLoggedIn = true;
       req.session.name = username;
@@ -534,7 +545,10 @@ app.post("/login-post", (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-  req.session.destroy();
+  req.session.destroy((error) => {
+    console.log("Error while destroying this session");
+  });
+
   res.redirect("/login");
 });
 
@@ -595,12 +609,12 @@ app.get("/dashboard/delete/:id", (request, response) => {
 
 app.post("/dashboard/new", (request, response) => {
   const newVideoclip = [
-    request.body.vtitle,
-    request.body.vdesc,
-    request.body.vrelease,
-    request.body.vlink,
-    request.body.vimage,
-    request.body.gid,
+    request.body.vtitlenew,
+    request.body.vdescnew,
+    request.body.vreleasenew,
+    request.body.vlinknew,
+    request.body.vimagenew,
+    request.body.gidnew,
   ];
   if (request.session.isLoggedIn && request.session.isAdmin == true) {
     db.run(
@@ -619,7 +633,7 @@ app.post("/dashboard/new", (request, response) => {
 
               db.run(
                 "INSERT INTO artist (aname) VALUES (?)",
-                request.body.aname,
+                request.body.anamenew,
                 (error) => {
                   if (error) {
                     console.log("ERROR: " + error);
@@ -732,14 +746,35 @@ app.post("/dashboard/update/:id", (request, response) => {
           console.log("Error" + error);
         } else {
           console.log("Line updated in the videos table");
-          db.run("UPDATE artist SET aname = ?", request.body.aname, (error) => {
-            if (error) {
-              console.log("Error" + error);
-            } else {
-              console.log("Line updated in the arostt table");
+          db.get(
+            `SELECT artist.aid
+            FROM artist
+            INNER JOIN artistVideoclip ON artist.aid = artistvideoclip.aid
+            INNER JOIN videoclip ON artistVideoclip.vid = videoclip.vid
+            WHERE videoclip.vid = ?;
+            `,
+            [id],
+            (err, row) => {
+              if (err) {
+                console.log("error" + err);
+              } else {
+                console.log(row);
+                const aidArtist = row.aid;
+                db.run(
+                  "UPDATE artist SET aname = ? where aid = ?",
+                  [request.body.aname, aidArtist],
+                  (error) => {
+                    if (error) {
+                      console.log("Error" + error);
+                    } else {
+                      console.log("Line updated in the artist table");
+                    }
+                    response.redirect("/dashboard");
+                  }
+                );
+              }
             }
-            response.redirect("/dashboard");
-          });
+          );
         }
       }
     );
