@@ -215,7 +215,7 @@ db.run(
 );
 // creates table artist at startup
 db.run(
-  "CREATE TABLE IF NOT EXISTS artist (aid INTEGER PRIMARY KEY NOT NULL UNIQUE, aname TEXT NOT NULL, acountry TEXT NOT NULL, adesc TEXT NOT NULL)",
+  "CREATE TABLE IF NOT EXISTS artist (aid INTEGER PRIMARY KEY NOT NULL UNIQUE, aname TEXT NOT NULL, acountry TEXT, adesc TEXT )",
   (error) => {
     if (error) {
       // tests error: display error
@@ -561,6 +561,7 @@ app.get("/dashboard", (request, response) => {
       if (error) {
         errorDashboard = true;
       }
+
       response.render("dashboard.handlebars", {
         title: "Dashboard",
         style: "dashboard.css",
@@ -582,13 +583,6 @@ app.get("/dashboard/delete/:id", (request, response) => {
       [id],
       function (error, theVideoclips) {
         if (error) {
-          // const model = {
-          //   dbError: true,
-          //   theError: error,
-          //   isLoggedIn: request.session.isLoggedIn,
-          //   name: request.session.username,
-          //   isAdmin: request.session.isAdmin,
-          // };
           return response.status(500).send("Internal Server Error");
         } else {
           response.redirect("/dashboard");
@@ -600,6 +594,70 @@ app.get("/dashboard/delete/:id", (request, response) => {
   }
 });
 
+app.post("/dashboard/new", (request, response) => {
+  const newVideoclip = [
+    request.body.vtitle,
+    request.body.vdesc,
+    request.body.vrelease,
+    request.body.vlink,
+    request.body.vimage,
+    request.body.gid,
+  ];
+  if (request.session.isLoggedIn && request.session.isAdmin == true) {
+    db.run(
+      "INSERT INTO videoclip (vtitle, vdesc, vrelease, vlink, vimage, gid) VALUES (?, ? ,? ,? ,?, ?)",
+      newVideoclip,
+      (error) => {
+        if (error) {
+          console.log("ERROR: " + error);
+        } else {
+          console.log("Line added into the videos table");
+          db.get("SELECT last_insert_rowid() as lastID", (err, row) => {
+            if (err) {
+              console.error(err.message);
+            } else {
+              const videoClipId = row.lastID;
+
+              db.run(
+                "INSERT INTO artist (aname) VALUES (?)",
+                request.body.aname,
+                (error) => {
+                  if (error) {
+                    console.log("ERROR: " + error);
+                  } else {
+                    db.get(
+                      "SELECT last_insert_rowid() as lastID",
+                      (err, row) => {
+                        if (err) {
+                          console.error(err.message);
+                        } else {
+                          const artistId = row.lastID;
+                          db.run(
+                            "INSERT INTO artistVideoclip (aid, vid) VALUES (?, ?)",
+                            [artistId, videoClipId],
+                            (error) => {
+                              if (error) {
+                                console.log("ERROR: " + error);
+                              } else {
+                                response.redirect("/dashboard");
+                              }
+                            }
+                          );
+                        }
+                      }
+                    );
+                  }
+                }
+              );
+            }
+          });
+        }
+      }
+    );
+  } else {
+    response.redirect("/login");
+  }
+});
 // defines the final default route 404 NOT FOUND
 app.use(function (req, res) {
   res.status(404).render("error.handlebars", {

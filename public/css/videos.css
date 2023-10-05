@@ -96,6 +96,7 @@ main {
   border: solid 5px var(--primary);
   background-color: var(--background);
   box-shadow: 0 0 15px rgb(52, 29, 180);
+  height: 100%;
 }
 .card-body {
   border: 0;

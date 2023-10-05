@@ -1,7 +1,7 @@
 <div id="main" class="container">
   <div class="container">
-    <h1>Welcome, <span class="gradient-text">{{name}}</span> !</h1>
     <section>
+
       <h2>Videoclips</h2>
       <ul class="list">
         {{#each items}}
@@ -48,24 +48,107 @@
         </div>
       </div>
     </section>
+    <br /><br />
 
-    <!-- Create Section -->
-    {{! <section>
-      <h2>Create Item</h2>
-      <form action="/create" method="POST">
-        <div class="form-group">
-          <label for="name">Name:</label>
-          <input
-            type="text"
-            class="form-input"
-            id="name"
-            name="name"
-            required
-          />
-        </div>
-        <button type="submit" class="btn btn-primary">Create</button>
+    <section>
+      <h2>New Videoclip</h2>
+      <form action="/dashboard/new" method="post">
+        <fieldset>
+          <div class="col-3 col-sm-12">
+            <label class="form-label" for="aname">Artist</label>
+          </div>
+          <div class="col-9 col-sm-12">
+            <input
+              class="form-input"
+              type="text"
+              required="required"
+              id="aname"
+              name="aname"
+              placeholder="Artist"
+            />
+          </div>
+          <div class="col-3 col-sm-12">
+            <label class="form-label" for="vtitle">Videoclip title</label>
+          </div>
+          <div class="col-9 col-sm-12">
+            <input
+              class="form-input"
+              type="text"
+              name="vtitle"
+              id="vtitle"
+              placeholder="Title"
+              required="required"
+            />
+          </div>
+          <div class="col-3 col-sm-12">
+            <label class="form-label" for="vrelease">Release date</label>
+          </div>
+          <div class="col-9 col-sm-12">
+            <input
+              class="form-input"
+              type="date"
+              id="vrelease"
+              name="vrelease"
+              placeholder="Release date"
+              required="required"
+            />
+          </div>
+          <div class="col-3 col-sm-12">
+            <label class="form-label" for="vdesc">Description</label>
+          </div>
+          <div class="col-9 col-sm-12">
+            <textarea
+              id="vdesc"
+              name="vdesc"
+              cols="70"
+              rows="10"
+              required="required"
+            ></textarea>
+          </div>
+          <div class="col-3 col-sm-12">
+            <label class="form-label" for="vlink">Link</label>
+          </div>
+          <div class="col-9 col-sm-12">
+            <input
+              class="form-input"
+              type="text"
+              required="required"
+              id="vlink"
+              name="vlink"
+              placeholder="Youtube link"
+            />
+          </div>
+          <div class="col-3 col-sm-12">
+            <label class="form-label" for="vimage">Image url</label>
+          </div>
+          <div class="col-9 col-sm-12">
+            <input
+              class="form-input"
+              required="required"
+              name="vimage"
+              type="text"
+              id="vimage"
+              placeholder="Link to img url /img/"
+            />
+          </div>
+          <div class="col-3 col-sm-12">
+            <label class="form-label" for="gid">Genre</label>
+          </div>
+          <div class="col-9 col-sm-12">
+            <select name="gid" id="gid" required="required">
+              <option value="1">Drill</option>
+              <option value="2">Hiphop</option>
+              <option value="3">Pop</option>
+              <option value="4">Underground</option>
+              <option value="5">Uk</option>
+              <option value="6">French</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <input type="submit" class="btn btn-primary" value="Add videoclip" />
       </form>
-    </section> }}
+    </section>
   </div>
 
 </div>
