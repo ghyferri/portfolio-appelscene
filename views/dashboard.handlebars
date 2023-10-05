@@ -19,17 +19,117 @@
               {{anames}}
 
               <div class="float-right">
-                <a href="/edit/{{id}}">Edit</a>
+                <a class="edit-link" data-vid="{{vid}}">Edit</a>
                 |
                 <a href="/dashboard/delete/{{vid}}">Delete</a>
               </div>
             </label>
 
             <div class="accordion-body">
-              <p>yo</p>
+              <div class="wrapper">
+                <form action="/dashboard/update/{{vid}}" method="post">
+                  <fieldset>
+                    <div class="col-3 col-sm-12">
+                      <label class="form-label" for="aname">Artist</label>
+                    </div>
+                    <div class="col-9 col-sm-12">
+                      <input
+                        class="form-input"
+                        type="text"
+                        required="required"
+                        id="aname"
+                        name="aname"
+                        placeholder="Artist"
+                        value="{{anames}}"
+                      />
+                    </div>
+                    <div class="col-3 col-sm-12">
+                      <label class="form-label" for="vtitle">Videoclip title</label>
+                    </div>
+                    <div class="col-9 col-sm-12">
+                      <input
+                        class="form-input"
+                        type="text"
+                        name="vtitle"
+                        id="vtitle"
+                        placeholder="Title"
+                        required="required"
+                        value="{{vtitle}}"
+                      />
+                    </div>
+                    <div class="col-3 col-sm-12">
+                      <label class="form-label" for="vrelease">Release date</label>
+                    </div>
+                    <div class="col-9 col-sm-12">
+                      <input
+                        class="form-input"
+                        type="text"
+                        id="vrelease"
+                        name="vrelease"
+                        placeholder="Release date"
+                        required="required"
+                        value="{{vrelease}}"
+                      />
+                    </div>
+                    <div class="col-3 col-sm-12">
+                      <label class="form-label" for="vdesc">Description</label>
+                    </div>
+                    <div class="col-9 col-sm-12">
+                      <textarea
+                        id="vdesc"
+                        name="vdesc"
+                        cols="40"
+                        rows="5"
+                        required="required"
+                      >{{vdesc}}</textarea>
+                    </div>
+                    <div class="col-3 col-sm-12">
+                      <label class="form-label" for="vlink">Link</label>
+                    </div>
+                    <div class="col-9 col-sm-12">
+                      <input
+                        class="form-input"
+                        type="text"
+                        required="required"
+                        id="vlink"
+                        name="vlink"
+                        placeholder="Youtube link"
+                        value="{{vlink}}"
+                      />
+                    </div>
+                    <div class="col-3 col-sm-12">
+                      <label class="form-label" for="vimage">Image url</label>
+                    </div>
+                    <div class="col-9 col-sm-12">
+                      <input
+                        class="form-input"
+                        required="required"
+                        name="vimage"
+                        type="text"
+                        id="vimage"
+                        placeholder="Link to img url /img/"
+                        value="{{vimage}}"
+                      />
+                    </div>
+                    <div class="col-3 col-sm-12">
+                      <label class="form-label">Genre</label>
+                    </div>
+                    <div class="col-9 col-sm-12">
+                      {{!-- <select name="gid" id="gid" required="required">
+                        <option value="1" {{#if(theGenreD gid)}} selected="selected"{{/if}}>Drill</option>
+                        <option value="2">Hiphop</option>
+                        <option value="3">Pop</option>
+                        <option value="4">Underground</option>
+                        <option value="5">Uk</option>
+                        <option value="6">French</option>
+                      </select> --}}
+                    </div>
+                  </fieldset>
+                  <input type="submit" class="btn btn-primary" value="Save" />
+                </form>
+              </div>
             </div>
           </div>
-
         {{/each}}
       </ul>
       <div class="accordion">
@@ -152,3 +252,13 @@
   </div>
 
 </div>
+
+<script>
+  // Function to toggle the accordion state function toggleAccordion(vid) {
+  const accordionCheckbox = document.getElementById(`accordion-${vid}`); if
+  (accordionCheckbox) { accordionCheckbox.checked = !accordionCheckbox.checked;
+  } } // Add a click event listener to the "Edit" links const editLinks =
+  document.querySelectorAll(".edit-link"); editLinks.forEach((link) => {
+  link.addEventListener("click", (e) => { e.preventDefault(); const vid =
+  link.getAttribute("data-vid"); toggleAccordion(vid); }); });
+</script>

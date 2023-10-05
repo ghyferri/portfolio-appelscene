@@ -30,7 +30,7 @@ ul {
   border: solid 1.25px white;
 }
 .accordion-body {
-  background-color: rgb(67, 67, 67);
+  background-color: rgb(85, 61, 173);
   color: white;
 }
 .i {
@@ -120,6 +120,11 @@ main {
   text-align: center; /* Center-align the text */
   color: #fff; /* Set the text color to white */
   font-size: 14px; /* Adjust the font size as needed */
+}
+
+.wrapper {
+  margin-left: 16px;
+  margin-bottom: 16px;
 }
 
 /* Media query for small screens */

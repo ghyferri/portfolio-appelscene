@@ -561,7 +561,6 @@ app.get("/dashboard", (request, response) => {
       if (error) {
         errorDashboard = true;
       }
-
       response.render("dashboard.handlebars", {
         title: "Dashboard",
         style: "dashboard.css",
@@ -650,6 +649,96 @@ app.post("/dashboard/new", (request, response) => {
                 }
               );
             }
+          });
+        }
+      }
+    );
+  } else {
+    response.redirect("/login");
+  }
+});
+app.get("/dashboard/update/:id", (request, response) => {
+  const id = request.params.id;
+  db.get("SELECT * FROM videoclip WHERE vid = ?", [id], (error, videoClip) => {
+    if (error) {
+      console.log("ERROR" + error);
+      const model = {
+        dbError: true,
+        theError: error,
+        videoclip: {},
+        isLoggedIn: request.session.isLoggedIn,
+        name: request.session.username,
+        isAdmin: request.session.isAdmin,
+      };
+      response.redirect("/dashboard", model);
+    } else {
+      const model = {
+        dbError: false,
+        theError: "",
+        videoclip: videoClip,
+        isLoggedIn: request.session.isLoggedIn,
+        name: request.session.username,
+        isAdmin: request.session.isAdmin,
+        title: "Dashboard",
+        style: "dashboard.css",
+        helpers: {
+          theGenreD(value) {
+            return value == "1";
+          },
+          theGenreH(value) {
+            return value == "2";
+          },
+          theGenreP(value) {
+            return value == "3";
+          },
+          theGenreU(value) {
+            return value == "4";
+          },
+          theGenreUK(value) {
+            return value == "5";
+          },
+          theGenreF(value) {
+            return value == "6";
+          },
+        },
+      };
+      res.render("dashboard.handlebars", model);
+    }
+
+    // Render a form for updating the videoclip
+    response.render("update_videoclip_form", {
+      videoClip: videoClip,
+    });
+  });
+});
+
+app.post("/dashboard/update/:id", (request, response) => {
+  const id = request.params.id;
+  const updatedVideoClip = [
+    request.body.vtitle,
+    request.body.vdesc,
+    request.body.vrelease,
+    request.body.vlink,
+    request.body.vimage,
+    request.body.gid,
+    id, // Include the ID in the update query
+  ];
+  if (request.session.isLoggedIn == true && request.session.isAdmin == 1) {
+    db.run(
+      "UPDATE videoclip SET vtitle = ?, vdesc = ?, vrelease = ?, vlink = ?, vimage = ?, gid = ? WHERE vid = ?",
+      updatedVideoClip,
+      (error) => {
+        if (error) {
+          console.log("Error" + error);
+        } else {
+          console.log("Line updated in the videos table");
+          db.run("UPDATE artist SET aname = ?", request.body.aname, (error) => {
+            if (error) {
+              console.log("Error" + error);
+            } else {
+              console.log("Line updated in the arostt table");
+            }
+            response.redirect("/dashboard");
           });
         }
       }
