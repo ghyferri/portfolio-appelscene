@@ -182,4 +182,8 @@ main {
   .hamburger-menu.active {
     display: none;
   }
+  #main {
+    display: flex;
+    justify-content: center;
+  }
 }
