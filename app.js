@@ -57,28 +57,6 @@ app.set("views", "./views");
 app.use(express.static("public"));
 // body parser
 
-// function to check if a user is an admin
-// function is_admin(req, res, next) {
-//   if (req.session && req.session.user && req.session.user.isa) {
-//     // User is an admin, allow access
-//     return next();
-//   } else {
-//     console.log(user);
-//     // User is not an admin, deny access
-//     res.status(403).render("error.handlebars", {
-//       ErrorHeader: "403: ACCESS DENIED",
-//       ErrorBody: "Sorry, you have no permission to access this website.",
-//       title: "Error 403",
-//       style: "error.css",
-//     });
-//   }
-// }
-// middelware for admin
-// app.use((req, res, next) => {
-//   req.isAdmin = req.session.user ? req.session.user.is_admin : false;
-//   next();
-// });
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -413,12 +391,20 @@ db.serialize(() => {
   db.run(
     "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, isAdmin INTEGER)"
   );
-  const adminPassword = bcrypt.hashSync("admin", 10); // Hash the admin password
+  const adminPassword = bcrypt.hashSync("admin123", 10); // Hash the admin password
+  const userPassword = bcrypt.hashSync("user123", 10); // Hash the user
+
   const adminUser = db.prepare(
     "INSERT OR IGNORE INTO users (username, password, isAdmin) VALUES (?, ?, ?)"
   );
   adminUser.run("admin", adminPassword, 1); // '1' indicates that this user is an admin
   adminUser.finalize();
+
+  const regularUser = db.prepare(
+    "INSERT OR IGNORE INTO users (username, password, isAdmin) VALUES (?, ?, ?)"
+  );
+  regularUser.run("user", userPassword, 0); // '0' indicates that this user is not an admin
+  regularUser.finalize();
 });
 
 // CONTROLLER (THE BOSS)
@@ -549,40 +535,36 @@ app.post("/login-post", (req, res) => {
   const { username, password } = req.body;
 
   // Check the user's credentials in the database
-  db.get(
-    "SELECT * FROM users WHERE username = ? AND isAdmin = 1",
-    username,
-    (err, user) => {
-      if (err) {
-        console.error(err.message);
-        return res.status(500).send("Internal Server Error");
-      }
-      if (!user || !bcrypt.compareSync(password, user.password)) {
-        // User not found or password incorrect
-        const loginError = "* Wrong username or password";
-        req.session.isAdmin = false;
-        req.session.isLoggedIn = false;
-        req.session.name = "";
-        return res.render("login.handlebars", {
-          error: loginError,
-          style: "login.css",
-          title: "login",
-        });
-      }
-      req.session.isAdmin = 1;
-      req.session.isLoggedIn = true;
-      req.session.name = username;
-
-      res.redirect("/");
+  db.get("SELECT * FROM users WHERE username = ?", username, (err, user) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).send("Internal Server Error");
     }
-  );
+    if (!user || !bcrypt.compareSync(password, user.password)) {
+      // User not found or password incorrect
+      const loginError = "* Wrong username or password";
+      req.session.isAdmin = false;
+      req.session.isLoggedIn = false;
+      req.session.name = "";
+      return res.render("login.handlebars", {
+        error: loginError,
+        style: "login.css",
+        title: "login",
+      });
+    }
+    if (user.isAdmin == 1) {
+      req.session.isAdmin = 1;
+    } else {
+      req.session.isAdmin = 0;
+    }
+    req.session.isLoggedIn = true;
+    req.session.username = username;
+    res.redirect("/");
+  });
 });
 
 app.get("/logout", (req, res) => {
-  req.session.destroy((error) => {
-    console.log("Error while destroying this session");
-  });
-
+  req.session.destroy((error) => {});
   res.redirect("/login");
 });
 

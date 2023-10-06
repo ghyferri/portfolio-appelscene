@@ -10,8 +10,13 @@
       <li><a href="/about">About</a></li>
       <li><a href="/contact">Contact</a></li>
       {{#if isLoggedIn}}
-        <li><a href="/dashboard">Dashboard</a></li>
-        <li><a href="/logout">Logout</a></li>
+        {{#if isAdmin}}
+          <li><a href="/dashboard">Dashboard</a></li>
+        {{/if}}
+        <li><a href="/logout">
+            Logout
+            <span style="font-size: .7em; color: rgb(232, 170, 57)">
+              {{name}}</span></a></li>
       {{else}}
         <li><a href="/login">Login</a></li>
       {{/if}}
