@@ -125,6 +125,28 @@ img {
   margin-top: 6px;
   color: var(--text);
 }
+.pagination {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  justify-content: center;
+  margin-top: 20px; /* Adjust the spacing as needed */
+}
+
+.pagination li {
+  margin: 0 5px; /* Adjust the spacing between elements as needed */
+}
+
+.pagination li a {
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+}
+
+.pagination li.active a {
+  background-color: #007bff; /* Change to your preferred active page color */
+  color: #fff; /* Change to your preferred text color for active page */
+}
 @media screen and (max-width: 768px) {
   .nav-links {
     display: none;

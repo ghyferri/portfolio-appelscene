@@ -28,6 +28,21 @@ const hbs = exphbs.create({
     theGenreF(value) {
       return value == "6";
     },
+    subtract(a, b) {
+      return a - b;
+    },
+    add(a, b) {
+      return a + b;
+    },
+    gt(a, b) {
+      return a > b;
+    },
+    lt(a, b) {
+      return a < b;
+    },
+    eq(a, b) {
+      return a === b;
+    },
     // Add more custom helpers as needed
   },
 });
@@ -418,13 +433,20 @@ app.get("/", (request, response) => {
 });
 
 app.get("/videos", (request, response) => {
+  const page = request.query.page || 1; // Get the requested page number
+  const itemsPerPage = 4; // Set the number of items to display per page
+
+  // Calculate the offset based on the current page
+  const offset = (page - 1) * itemsPerPage;
   db.all(
     `SELECT videoclip.*, GROUP_CONCAT(artist.aname, ' x ') AS anames
       FROM videoclip 
       INNER JOIN artistVideoclip ON videoclip.vid = artistVideoclip.vid
       INNER JOIN artist ON artistVideoclip.aid = artist.aid
       GROUP BY videoclip.vid
-      ORDER BY videoclip.vtitle`,
+      ORDER BY videoclip.vtitle
+      LIMIT ? OFFSET ?`,
+    [itemsPerPage, offset],
     (error, theVideoclips) => {
       const model = {
         title: "Videos",
@@ -435,14 +457,26 @@ app.get("/videos", (request, response) => {
         isLoggedIn: request.session.isLoggedIn,
         name: request.session.username,
         isAdmin: request.session.isAdmin,
+        currentPage: parseInt(page),
+        totalPages: 0,
       };
       if (error) {
         model.hasDatabaseError = true;
         model.theError = error;
       } else {
         model.videoclips = theVideoclips;
+        db.get("SELECT COUNT(*) as total FROM videoclip", (error, result) => {
+          if (error) {
+            console.log("error" + error);
+          } else {
+            const totalItems = result.total;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+            model.totalPages = totalPages;
+            response.render("videos.handlebars", model);
+          }
+        });
       }
-      response.render("videos.handlebars", model);
     }
   );
 });

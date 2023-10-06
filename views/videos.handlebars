@@ -30,6 +30,22 @@
           </div>
         {{/each}}
       </div>
-    </div>
-  {{/if}}
+ 
+   <!-- Pagination -->
+  <ul class="pagination">
+    <li class="{{#if (eq currentPage 1)}}disabled{{/if}}">
+      <a href="/videos?page=1">First</a>
+    </li>
+    {{#if (gt currentPage 1)}}
+    <li><a href="/videos?page={{subtract currentPage 1}}">Previous</a></li>
+    {{/if}}
+    {{#if (lt currentPage totalPages)}}
+    <li><a href="/videos?page={{add currentPage 1}}">Next</a></li>
+    {{/if}}
+    <li class="{{#if (eq currentPage totalePages)}}disabled{{/if}}">
+      <a href="/videos?page={{totalPages}}">Last</a>
+    </li>
+  </ul>
+ 
+  {{/if}} 
 </div>
