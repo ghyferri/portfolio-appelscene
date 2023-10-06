@@ -199,6 +199,51 @@ db.run(
           image: "/img/demontime_thumbnail.png",
           gid: "2",
         },
+        {
+          id: "7",
+          title: "Snap",
+          desc: "Explore the world of a carefree boy as he raps about his Snapchat adventures in this catchy and energetic track. Join him as he shares the ups and downs of life without a car, all through the lens of Snapchat.",
+          release: "01-04-2023",
+          link: "https://www.youtube.com/embed/lThCLM2a5RU?si=m4U-Y6sVmU4A1SBC",
+          image: "/img/snap_thumbnail.png",
+          gid: "3",
+        },
+        {
+          id: "8",
+          title: "Omari Bravo",
+          desc: "Join us for a heartwarming song as a young boy pours his heart out in a beautiful melody, introducing himself and expressing his feelings for a special someone. Listen to his heartfelt lyrics as he opens up about his emotions and the admiration he holds for that special girl. Don't miss this touching musical journey!",
+          release: "17-02-2023",
+          link: "https://www.youtube.com/embed/Qo6-AQSJYNc?si=Uv7u6SaRROtUs3xV",
+          image: "/img/aangenaam_thumbnail.png",
+          gid: "4",
+        },
+        {
+          id: "9",
+          title: "Jaloers",
+          desc: "Step into the world of envy and aspiration as we delve into the minds of boys who can't help but feel jealous of the extravagant and luxurious lifestyles they see around them. In this song, these boys candidly share their inner struggles and desires, highlighting the stark contrast between their own lives and the opulence they yearn for",
+          release: "27-01-2023",
+          link: "https://www.youtube.com/embed/we8E3RUs1Q0?si=bxv_9AkPxCQmrO2S",
+          image: "/img/jaloers_thumbnail.png",
+          gid: "2",
+        },
+        {
+          id: "10",
+          title: "Cara Pils Anthem",
+          desc: "Indulge in the passion of a young boy who can't get enough of his beloved Cara Pils. Join him as he celebrates his love for this drink in a catchy and spirited song. He'll take you on a journey through the flavors and moments that make Cara Pils so special to him. Raise a glass and join in the fun as we toast to this unique ode to a favorite beverage!",
+          release: "28-10-2022",
+          link: "https://www.youtube.com/embed/9fiDD2h7n1w?si=1sTil1VSIj44Bq-y",
+          image: "/img/carapils_thumbnail.png",
+          gid: "4",
+        },
+        {
+          id: "11",
+          title: "Oh girl",
+          desc: "Listen to the sweet serenade of a boy as he sings his heart out about the girl who has captured his dreams. In this heartfelt song, he expresses his feelings of admiration, longing, and affection for the special gyall who has stolen his heart.",
+          release: "16-07-2022",
+          link: "https://www.youtube.com/embed/-XyfgWoE-fE?si=YuC5jM_NhphEWE4n",
+          image: "/img/ohgirl_thumbnail.png",
+          gid: "3",
+        },
       ];
       // inserts projects
       videoclips.forEach((oneVideoclip) => {
@@ -284,6 +329,18 @@ db.run(
           country: "Nl",
           desc: "Manager aka the boss",
         },
+        {
+          id: "9",
+          name: "Kuba",
+          country: "PL",
+          desc: "Reckless and wild",
+        },
+        {
+          id: "10",
+          name: "Omari Bravo",
+          country: "BE",
+          desc: "Dreamy",
+        },
       ];
       // inserts artist
       artists.forEach((oneArtist) => {
@@ -361,6 +418,36 @@ db.run(
         {
           id: "10",
           vid: "6",
+          aid: "1",
+        },
+        {
+          id: "11",
+          vid: "7",
+          aid: "9",
+        },
+        {
+          id: "12",
+          vid: "8",
+          aid: "10",
+        },
+        {
+          id: "13",
+          vid: "9",
+          aid: "2",
+        },
+        {
+          id: "14",
+          vid: "9",
+          aid: "1",
+        },
+        {
+          id: "15",
+          vid: "10",
+          aid: "5",
+        },
+        {
+          id: "16",
+          vid: "11",
           aid: "1",
         },
       ];
