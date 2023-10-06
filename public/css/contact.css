@@ -43,6 +43,7 @@ header {
 /* Style the navigation links */
 .nav-links ul {
   list-style: none;
+
   display: flex;
 }
 
@@ -144,29 +145,6 @@ main {
   border: none;
 }
 @media screen and (max-width: 768px) {
-  .nav-links {
-    display: none;
-    flex-direction: column;
-    background-color: var(--accent);
-    position: absolute;
-    top: 90px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-  }
-
-  .nav-links.active {
-    display: block;
-  }
-
-  .hamburger-menu {
-    display: flex;
-  }
-
-  /* Hide hamburger menu when links are displayed */
-  .hamburger-menu.active {
-    display: none;
-  }
   .card_info {
     width: 100%;
   }
@@ -175,5 +153,46 @@ main {
   }
   .card_number {
     width: 100%;
+  }
+}
+
+@media screen and (max-width: 890px) {
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--accent);
+    position: absolute;
+    top: 90px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    display: none; /* Hide the menu initially */
+  }
+
+  .nav-links.active {
+    display: flex; /* Display the menu when active */
+    flex-direction: column; /* Stack menu items vertically */
+  }
+
+  .hamburger-menu {
+    display: block; /* Display the hamburger menu when needed */
+  }
+
+  /* Add some styles to the list items for better spacing */
+  .nav-links ul {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    background-color: rgb(60, 4, 156);
+
+    flex-direction: column;
+  }
+
+  .nav-links ul li {
+    margin-bottom: 10px;
+  }
+  /* Hide hamburger menu when links are displayed */
+  .hamburger-menu.active {
+    display: none;
   }
 }

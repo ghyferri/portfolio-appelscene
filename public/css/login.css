@@ -137,8 +137,14 @@ main {
 
 /* Media query for small screens */
 @media screen and (max-width: 768px) {
+  .card {
+    width: 300px;
+  }
+}
+
+@media screen and (max-width: 890px) {
   .nav-links {
-    display: none;
+    display: flex;
     flex-direction: column;
     background-color: var(--accent);
     position: absolute;
@@ -146,21 +152,34 @@ main {
     left: 0;
     width: 100%;
     text-align: center;
+    display: none; /* Hide the menu initially */
   }
 
   .nav-links.active {
-    display: block;
+    display: flex; /* Display the menu when active */
+    flex-direction: column; /* Stack menu items vertically */
   }
 
   .hamburger-menu {
-    display: flex;
+    display: block; /* Display the hamburger menu when needed */
   }
 
+  /* Add some styles to the list items for better spacing */
+  .nav-links ul {
+    padding: 0;
+    background-color: rgb(60, 4, 156);
+    z-index: 4;
+
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nav-links ul li {
+    margin-bottom: 10px;
+  }
   /* Hide hamburger menu when links are displayed */
   .hamburger-menu.active {
     display: none;
-  }
-  .card {
-    width: 300px;
   }
 }
