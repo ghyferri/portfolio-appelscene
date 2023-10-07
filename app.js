@@ -220,7 +220,7 @@ db.run(
         },
         {
           id: "8",
-          title: "Omari Bravo",
+          title: "Aangenaam",
           desc: "Join us for a heartwarming song as a young boy pours his heart out in a beautiful melody, introducing himself and expressing his feelings for a special someone. Listen to his heartfelt lyrics as he opens up about his emotions and the admiration he holds for that special girl. Don't miss this touching musical journey!",
           release: "17-02-2023",
           link: "https://www.youtube.com/embed/Qo6-AQSJYNc?si=Uv7u6SaRROtUs3xV",
@@ -252,6 +252,15 @@ db.run(
           release: "16-07-2022",
           link: "https://www.youtube.com/embed/-XyfgWoE-fE?si=YuC5jM_NhphEWE4n",
           image: "/img/ohgirl_thumbnail.png",
+          gid: "3",
+        },
+        {
+          id: "12",
+          title: "For The Fam",
+          desc: "Get ready for a touching and heartwarming song as a young boy raises his voice in celebration of his beloved family. With lyrics filled with gratitude and affection, he sings about the bond that holds them together through thick and thin. Join us in this musical tribute as he expresses his deep love and appreciation for the people who mean the world to him, his family",
+          release: "01-01-2019",
+          link: "https://www.youtube.com/embed/xWKM0NedvDk?si=eWBiqOLatsfxUVob",
+          image: "/img/forthefam_thumbnail.png",
           gid: "3",
         },
       ];
@@ -347,7 +356,7 @@ db.run(
         },
         {
           id: "10",
-          name: "Omari Bravo",
+          name: "OmariBravo",
           country: "BE",
           desc: "Dreamy",
         },
@@ -437,8 +446,8 @@ db.run(
         },
         {
           id: "12",
-          vid: "8",
-          aid: "10",
+          vid: "12",
+          aid: "1",
         },
         {
           id: "13",
@@ -606,8 +615,10 @@ app.get("/videos", (request, response) => {
             console.log("error" + error);
           } else {
             const totalItems = result.total;
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
-
+            console.log(totalItems);
+            console.log(itemsPerPage);
+            const totalPages = Math.round(totalItems / itemsPerPage);
+            console.log(totalPages);
             model.totalPages = totalPages;
             response.render("videos.handlebars", model);
           }
@@ -854,21 +865,44 @@ app.get("/dashboard", (request, response) => {
     return;
   }
   db.all(
-    `SELECT videoclip.*, GROUP_CONCAT(artist.aname, ' x ') AS anames
+    `SELECT videoclip.*, artist.aid, artist.aname
       FROM videoclip 
       INNER JOIN artistVideoclip ON videoclip.vid = artistVideoclip.vid
       INNER JOIN artist ON artistVideoclip.aid = artist.aid
-      GROUP BY videoclip.vid
       ORDER BY videoclip.vtitle`,
-    (error, theVideoclips) => {
+    (error, rows) => {
       let errorDashboard = false;
       if (error) {
         errorDashboard = true;
       }
+      const videoclips = [];
+      let currentVideoClip = null;
+
+      for (const row of rows) {
+        if (!currentVideoClip || currentVideoClip.vid !== row.vid) {
+          currentVideoClip = {
+            vid: row.vid,
+            vtitle: row.vtitle,
+            vrelease: row.vrelease,
+            vdesc: row.vdesc,
+            vlink: row.vlink,
+            vimage: row.vimage,
+            gid: row.gid,
+            artists: [],
+          };
+          videoclips.push(currentVideoClip);
+        }
+
+        currentVideoClip.artists.push({
+          aid: row.aid,
+          aname: row.aname,
+        });
+      }
+
       response.render("dashboard.handlebars", {
         title: "Dashboard",
         style: "dashboard.css",
-        items: theVideoclips,
+        videoclips: videoclips,
         hasDatabaseError: errorDashboard,
         isLoggedIn: request.session.isLoggedIn,
         name: request.session.username,
@@ -1035,36 +1069,35 @@ app.post("/dashboard/update/:id", (request, response) => {
         if (error) {
           console.log("Error" + error);
         } else {
-          console.log("Line updated in the videos table");
-          db.get(
-            `SELECT artist.aid
-            FROM artist
-            INNER JOIN artistVideoclip ON artist.aid = artistvideoclip.aid
-            INNER JOIN videoclip ON artistVideoclip.vid = videoclip.vid
-            WHERE videoclip.vid = ?;
-            `,
-            [id],
-            (err, row) => {
-              if (err) {
-                console.log("error" + err);
-              } else {
-                console.log(row);
-                const aidArtist = row.aid;
-                db.run(
-                  "UPDATE artist SET aname = ? where aid = ?",
-                  [request.body.aname, aidArtist],
-                  (error) => {
-                    if (error) {
-                      console.log("Error" + error);
-                    } else {
-                      console.log("Line updated in the artist table");
-                    }
-                    response.redirect("/dashboard");
-                  }
-                );
+          const artistNames = request.body.aname;
+
+          // Convert artistNames to an array if it's a single string
+          const artistNamesArray = Array.isArray(artistNames)
+            ? artistNames
+            : [artistNames];
+
+          const artistIds = request.body.aid; // Assuming you have artist IDs
+
+          // Loop through the artist names and update each artist
+          artistNamesArray.forEach((artistName, index) => {
+            console.log("id " + artistIds);
+            console.log("name " + artistName);
+            const artistId = artistIds[index]; // Get the corresponding artist ID
+            db.run(
+              "UPDATE artist SET aname = ? WHERE aid = ?",
+              [artistName, artistId],
+              (error) => {
+                if (error) {
+                  console.log("Error" + error);
+                } else {
+                  console.log("Artist updated:", artistName);
+                }
               }
-            }
-          );
+            );
+          });
+
+          console.log("Line updated in the videos table");
+          response.redirect("/dashboard");
         }
       }
     );

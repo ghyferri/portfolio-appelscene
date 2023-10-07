@@ -5,7 +5,7 @@
       <h2>Videoclips</h2>
       <ul class="list">
 
-        {{#each items}}
+        {{#each videoclips}}
           <div class="accordion">
             <input
               type="checkbox"
@@ -17,8 +17,9 @@
               <i class="icon icon-arrow-right mr-1" ></i>
               {{vtitle}}
               -
-              {{anames}}
-
+              {{#each artists}}
+                   <span class="artist-name">{{aname}}</span>
+              {{/each}}
               <div class="float-right">
                 <a class="edit-link" data-vid="{{vid}}">Edit</a>
                 |
@@ -33,6 +34,9 @@
                     <div class="col-3 col-sm-12">
                       <label class="form-label" for="aname">Artist</label>
                     </div>
+
+                  {{#each artists}}
+
                     <div class="col-9 col-sm-12">
                       <input
                         class="form-input formwidth"
@@ -41,9 +45,16 @@
                         id="aname"
                         name="aname"
                         placeholder="Artist"
-                        value="{{anames}}"
+                        value="{{aname}}"
                       />
+                         <input
+                           type="hidden"
+                           name="aid"
+                           value="{{aid}}"
+      />
                     </div>
+                  {{/each}}
+                 
                     <div class="col-3 col-sm-12">
                       <label class="form-label" for="vtitle">Videoclip title</label>
                     </div>
@@ -250,3 +261,5 @@
   link.addEventListener("click", (e) => { e.preventDefault(); const vid =
   link.getAttribute("data-vid"); toggleAccordion(vid); }); });
 </script>
+
+
