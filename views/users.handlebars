@@ -1,0 +1,101 @@
+<div class="container" id="main">
+  <h1>User List</h1>
+  {{#each users}}
+    <div class="accordion">
+      <div class="wrapper">
+        <input
+          type="checkbox"
+          id="accordion-{{id}}"
+          name="accordion-checkbox"
+          hidden
+        />
+        <label class="accordion-header text-labels" for="accordion-{{id}}">
+          <i class="icon icon-arrow-right mr-1"></i>
+          {{username}}
+
+          <div class="float-right">
+            <a class="edit-link" data-user="{{id}}">Edit</a>
+            |
+            <a href="/users/delete/{{id}}">Delete</a>
+          </div>
+        </label>
+
+        <div class="accordion-body">
+          <div class="wrapper">
+            <form action="/users/update/{{id}}" method="post">
+              <div class="col-3 col-sm-12">
+                <label class="form-label" for="username">Username</label>
+              </div>
+              <div class="col-9 col-sm-12">
+                <input
+                  class="form-input formwidth"
+                  required="required"
+                  name="username"
+                  type="text"
+                  id="username"
+                  placeholder="Change username"
+                  value="{{username}}"
+                />
+              </div>
+              <div class="col-3 col-sm-12">
+                <label class="form-label" for="isAdmin">Is Admin</label>
+              </div>
+              <div class="col-9 col-sm-12">
+
+                <select name="isAdmin" id="isAdmin" required="required">
+                 <option value="0" {{#if (isNotAdmin isAdmin)}} selected="selected" {{/if}}>No</option>
+                        <option value="1" {{#if (isTheAdmin isAdmin)}} selected="selected"  {{/if}}>Yes</option> 
+
+                </select>
+              </div>
+              <br />
+              <input type="submit" class="btn btn-primary" value="Save" />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/each}}
+  <section>
+    <h2>New User</h2>
+    <form action="/users/new" method="post">
+      <div class="col-3 col-sm-12">
+        <label class="form-label" for="nusername">Username</label>
+      </div>
+      <div class="col-9 col-sm-12">
+        <input
+          class="form-input formwidth"
+          required="required"
+          name="nusername"
+          type="text"
+          id="nusername"
+          placeholder="Choose username"
+        />
+      </div>
+      <div class="col-3 col-sm-12">
+        <label class="form-label" for="npassword">Password</label>
+      </div>
+      <div class="col-9 col-sm-12">
+        <input
+          class="form-input formwidth"
+          required="required"
+          name="npassword"
+          type="password"
+          id="npassword"
+          placeholder="Choose password"
+        />
+      </div>
+      <div class="col-3 col-sm-12">
+        <label class="form-label" for="nisAdmin">Is Admin</label>
+      </div>
+      <div class="col-9 col-sm-12">
+        <select name="nisAdmin" id="nisAdmin" required="required">
+          <option value="1">Yes</option>
+          <option value="0">No</option>
+        </select>
+      </div>
+      <br />
+      <input type="submit" class="btn btn-primary" value="Add user" />
+    </form>
+  </section>
+</div>

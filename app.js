@@ -28,6 +28,12 @@ const hbs = exphbs.create({
     theGenreF(value) {
       return value == "6";
     },
+    isTheAdmin(value) {
+      return value == "1";
+    },
+    isNotAdmin(value) {
+      return value == "0";
+    },
     subtract(a, b) {
       return a - b;
     },
@@ -56,7 +62,10 @@ app.set("views", "./views");
 // define static directory "public" to access css/ and img/
 app.use(express.static("public"));
 // body parser
-
+app.use((req, res, next) => {
+  console.log(`Visited URL: ${req.url}`);
+  next(); // Continue to the next middleware or route handler
+});
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -75,6 +84,7 @@ app.use(
 // MODEL (DATA)
 const sqlite3 = require("sqlite3");
 const db = new sqlite3.Database("projects-gh.db");
+
 // creates table genre at startup
 db.run(
   "CREATE TABLE IF NOT EXISTS genre (gid INTEGER PRIMARY KEY NOT NULL UNIQUE, gname TEXT NOT NULL, gdesc TEXT NOT NULL)",
@@ -494,6 +504,60 @@ db.serialize(() => {
   regularUser.finalize();
 });
 
+app.get("/register", (request, response) => {
+  response.render("register.handlebars", {
+    title: "Register",
+    style: "login.css",
+    isLoggedIn: request.session.isLoggedIn,
+    name: request.session.username,
+    isAdmin: request.session.isAdmin,
+  });
+});
+
+app.post("/register", (request, response) => {
+  const { username, password1, password2 } = request.body;
+
+  // check if pw is the same
+  if (password1 != password2) {
+    const registerError = "* Password is not the same";
+    return response.render("register.handlebars", {
+      error: registerError,
+      style: "login.css",
+      title: "register",
+    });
+  }
+  // check if user already exists in database
+  db.get("SELECT * FROM users WHERE username = ?", username, (err, user) => {
+    if (err) {
+      console.log("error" + err);
+      response.status(500).send("Database error");
+    } else if (user) {
+      const userError = "* User already exists ";
+      return response.render("register.handlebars", {
+        error: userError,
+        style: "login.css",
+        title: "register",
+      });
+    } else {
+      const hash = bcrypt.hashSync(password2, 10);
+      const regularUser = db.prepare(
+        "INSERT OR IGNORE INTO users (username, password, isAdmin) VALUES (?, ?, ?)"
+      );
+      regularUser.run(username, hash, 0); // '0' indicates that this user is not an admin
+      regularUser.finalize();
+
+      response.render("register.handlebars", {
+        title: "Register",
+        style: "login.css",
+        isLoggedIn: request.session.isLoggedIn,
+        name: request.session.username,
+        isAdmin: request.session.isAdmin,
+        registered: true,
+      });
+    }
+  });
+});
+
 // CONTROLLER (THE BOSS)
 app.get("/", (request, response) => {
   response.render("home.handlebars", {
@@ -506,10 +570,9 @@ app.get("/", (request, response) => {
 });
 
 app.get("/videos", (request, response) => {
-  const page = request.query.page || 1; // Get the requested page number
-  const itemsPerPage = 4; // Set the number of items to display per page
-
-  // Calculate the offset based on the current page
+  const page = request.query.page || 1;
+  const itemsPerPage = 4;
+  //pagination
   const offset = (page - 1) * itemsPerPage;
   db.all(
     `SELECT videoclip.*, GROUP_CONCAT(artist.aname, ' x ') AS anames
@@ -606,7 +669,6 @@ app.get("/contact", (request, response) => {
   });
 });
 
-//login
 app.get("/login", (request, response) => {
   response.render("login.handlebars", {
     title: "Login",
@@ -617,7 +679,6 @@ app.get("/login", (request, response) => {
   });
 });
 
-// Handle the login form submission
 app.post("/login-post", (req, res) => {
   const { username, password } = req.body;
 
@@ -655,6 +716,129 @@ app.get("/logout", (req, res) => {
   res.redirect("/login");
 });
 
+app.get("/users", (request, response) => {
+  if (!request.session.isLoggedIn || request.session.isAdmin == 0) {
+    //  User is not an admin, deny access
+    response.status(403).render("error.handlebars", {
+      ErrorHeader: "403: ACCESS DENIED",
+      ErrorBody: "Sorry, you have no permission to access this website.",
+      title: "Error 403",
+      style: "error.css",
+      isLoggedIn: request.session.isLoggedIn,
+      name: request.session.username,
+      isAdmin: request.session.isAdmin,
+    });
+    return;
+  }
+  db.all(`SELECT * FROM users`, (error, users) => {
+    if (error) {
+      console.log("Error" + error);
+      response.status(500).send("Error database");
+    } else {
+      // users.forEach((user) => {
+      //   console.log(user);
+      // });
+      response.render("users.handlebars", {
+        title: "Users",
+        style: "dashboard.css",
+        users: users,
+        isLoggedIn: request.session.isLoggedIn,
+        name: request.session.username,
+        isAdmin: request.session.isAdmin,
+      });
+    }
+  });
+});
+
+app.get("/users/delete/:id", (request, response) => {
+  const userId = request.params.id;
+  if (request.session.isLoggedIn == true && request.session.isAdmin == 1) {
+    db.run("DELETE FROM users WHERE id=?", [userId], function (error, user) {
+      if (error) {
+        return response.status(500).send("Internal Server Error");
+      } else {
+        response.redirect("/users");
+      }
+    });
+  } else {
+    response.redirect("/login");
+  }
+});
+app.get("/users/update/:id", (req, res) => {
+  const userId = req.params.id;
+  const query = "SELECT * FROM users WHERE id = ?";
+  db.get(query, [userId], (err, user) => {
+    if (err) {
+      console.error("Error retrieving user data:", err);
+      const model = {
+        dbError: true,
+        theError: err,
+        user: user,
+        isLoggedIn: req.session.isLoggedIn,
+        name: req.session.username,
+        isAdmin: req.session.isAdmin,
+      };
+      response.redirect("/users", model);
+    } else {
+      const model = {
+        dbError: false,
+        theError: "",
+        user: user,
+        isLoggedIn: req.session.isLoggedIn,
+        name: req.session.username,
+        isAdmin: req.session.isAdmin,
+        title: "Users",
+        style: "dashboard.css",
+        helpers: {
+          isTheADmin(value) {
+            return value == 1;
+          },
+          isNotAdmin(value) {
+            return value == 0;
+          },
+        },
+      };
+      res.render("users.handlebars", model);
+    }
+  });
+});
+
+app.post("/users/update/:id", (req, res) => {
+  console.log("update user");
+  const userId = req.params.id;
+  const updatedUsername = req.body.username;
+  const isAAdmin = req.body.isAdmin;
+  const query = "UPDATE users SET username = ?, isAdmin = ? WHERE id = ?";
+  if (req.session.isLoggedIn == true && req.session.isAdmin == 1) {
+    db.run(query, [updatedUsername, isAAdmin, userId], (err) => {
+      if (err) {
+        console.error("Error updating user:", err);
+      } else {
+        console.log("Line updated in users");
+        res.redirect("/users");
+      }
+    });
+  } else {
+    res.redirect("/login");
+  }
+});
+
+app.post("/users/new", (req, res) => {
+  const { nusername, nisAdmin, npassword } = req.body;
+  const hash = bcrypt.hashSync(npassword, 10);
+  const sql =
+    "INSERT INTO users (username ,password, isAdmin) VALUES (?, ?, ?)";
+  db.run(sql, [nusername, hash, nisAdmin], (err) => {
+    if (err) {
+      console.error("Error creating user:", err);
+      res.status(500).send("Error creating user");
+    } else {
+      console.log("User created with ID:", this.lastID);
+      res.redirect("/users");
+    }
+  });
+});
+
 app.get("/dashboard", (request, response) => {
   if (!request.session.isLoggedIn || request.session.isAdmin == 0) {
     //  User is not an admin, deny access
@@ -663,6 +847,9 @@ app.get("/dashboard", (request, response) => {
       ErrorBody: "Sorry, you have no permission to access this website.",
       title: "Error 403",
       style: "error.css",
+      isLoggedIn: request.session.isLoggedIn,
+      name: request.session.username,
+      isAdmin: request.session.isAdmin,
     });
     return;
   }
@@ -693,7 +880,7 @@ app.get("/dashboard", (request, response) => {
 
 app.get("/dashboard/delete/:id", (request, response) => {
   const id = request.params.id;
-  if (request.session.isLoggedIn == true && request.session.isAdmin == true) {
+  if (request.session.isLoggedIn == true && request.session.isAdmin == 1) {
     db.run(
       "DELETE FROM videoclip WHERE vid=?",
       [id],
@@ -719,7 +906,7 @@ app.post("/dashboard/new", (request, response) => {
     request.body.vimagenew,
     request.body.gidnew,
   ];
-  if (request.session.isLoggedIn && request.session.isAdmin == true) {
+  if (request.session.isLoggedIn && request.session.isAdmin == 1) {
     db.run(
       "INSERT INTO videoclip (vtitle, vdesc, vrelease, vlink, vimage, gid) VALUES (?, ? ,? ,? ,?, ?)",
       newVideoclip,
@@ -886,13 +1073,16 @@ app.post("/dashboard/update/:id", (request, response) => {
   }
 });
 // defines the final default route 404 NOT FOUND
-app.use(function (req, res) {
+app.use(function (request, res) {
   res.status(404).render("error.handlebars", {
     ErrorHeader: "404: NOT FOUND",
     ErrorBody:
       "Sorry, the requested page was not found on this site. Please consider going back to the",
     title: "Error 404",
     style: "error.css",
+    isLoggedIn: request.session.isLoggedIn,
+    name: request.session.username,
+    isAdmin: request.session.isAdmin,
   });
 });
 

@@ -132,6 +132,10 @@ main {
   color: #fff; /* Set the text color to white */
   font-size: 14px; /* Adjust the font size as needed */
 }
+.radio-horizontal label {
+  display: inline-block;
+  margin-right: 20px; /* Adjust spacing between radio buttons */
+}
 
 /* Center the text and social icons vertically and horizontally */
 

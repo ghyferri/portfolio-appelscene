@@ -1,0 +1,64 @@
+<div id="main" class="container">
+  <div class="columns">
+    <div class="column col-4 col-sm-12 col-mx-auto">
+      {{#if registered}}
+        <h3 style="text-align: center;">You are succesfully registered, go back
+          to the
+          <a href="/login">login page</a>
+          to sign in</h3>
+      {{else}}
+        <div class="card">
+          <div class="card-header">
+
+            <h4 class="card-title">Register</h4>
+          </div>
+          <div class="card-body">
+            <form action="" method="post" id="formregister">
+              <div class="form-group">
+                <label class="form-label" for="username">Username</label>
+                <input
+                  class="form-input"
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="Enter your username"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="password1">Password</label>
+                <input
+                  class="form-input"
+                  type="password"
+                  id="password1"
+                  name="password1"
+                  placeholder="Create password"
+                />
+
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="password2">Password Confirmation</label>
+                <input
+                  class="form-input"
+                  type="password"
+                  id="password2"
+                  name="password2"
+                  placeholder="Fill in your password"
+                />
+
+              </div>
+              {{#if error}}
+                <p class="error">{{error}}</p>
+              {{/if}}
+              <input
+                class="btn my-3 custom-button btn-block"
+                type="submit"
+                value="Sign up"
+              />
+            </form>
+          </div>
+
+        </div>
+      {{/if}}
+    </div>
+  </div>
+</div>
