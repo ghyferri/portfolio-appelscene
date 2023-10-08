@@ -618,7 +618,6 @@ app.get("/videos", (request, response) => {
             console.log(totalItems);
             console.log(itemsPerPage);
             const totalPages = Math.round(totalItems / itemsPerPage);
-            console.log(totalPages);
             model.totalPages = totalPages;
             response.render("videos.handlebars", model);
           }
@@ -976,6 +975,12 @@ app.post("/dashboard/new", (request, response) => {
                               if (error) {
                                 console.log("ERROR: " + error);
                               } else {
+                                console.log(
+                                  "user creatied with : " +
+                                    artistId +
+                                    " " +
+                                    videoClipId
+                                );
                                 response.redirect("/dashboard");
                               }
                             }
@@ -1070,7 +1075,7 @@ app.post("/dashboard/update/:id", (request, response) => {
           console.log("Error" + error);
         } else {
           const artistNames = request.body.aname;
-
+          // console.log("ja " + artistNames);
           // Convert artistNames to an array if it's a single string
           const artistNamesArray = Array.isArray(artistNames)
             ? artistNames
@@ -1079,10 +1084,30 @@ app.post("/dashboard/update/:id", (request, response) => {
           const artistIds = request.body.aid; // Assuming you have artist IDs
 
           // Loop through the artist names and update each artist
-          artistNamesArray.forEach((artistName, index) => {
-            console.log("id " + artistIds);
-            console.log("name " + artistName);
-            const artistId = artistIds[index]; // Get the corresponding artist ID
+          if (artistNamesArray.length > 1) {
+            // console.log("if");
+            artistNamesArray.forEach((artistName, index) => {
+              // console.log("id " + artistIds);
+              // console.log("name " + artistName);
+              const artistId = artistIds[index]; // Get the corresponding artist ID
+              console.log("De laatste id check" + artistId);
+              db.run(
+                "UPDATE artist SET aname = ? WHERE aid = ?",
+                [artistName, artistId],
+                (error) => {
+                  if (error) {
+                    console.log("Error" + error);
+                  } else {
+                    console.log("Artist updated:", artistName);
+                  }
+                }
+              );
+            });
+          } else {
+            const artistName = artistNamesArray[0];
+            const artistId = artistIds;
+            // console.log(artistName);
+            // console.log(artistId);
             db.run(
               "UPDATE artist SET aname = ? WHERE aid = ?",
               [artistName, artistId],
@@ -1094,7 +1119,7 @@ app.post("/dashboard/update/:id", (request, response) => {
                 }
               }
             );
-          });
+          }
 
           console.log("Line updated in the videos table");
           response.redirect("/dashboard");
