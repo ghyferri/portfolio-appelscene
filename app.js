@@ -6,6 +6,17 @@ const bcrypt = require("bcrypt");
 const connectSqlite3 = require("connect-sqlite3");
 const port = 8080; // defines the port
 const app = express(); // creates the Express application
+const https = require("https");
+const fs = require("fs");
+
+const options = {
+  key: fs.readFileSync("key.pem"),
+  cert: fs.readFileSync("cert.pem"),
+};
+
+https.createServer(options, app).listen(port, () => {
+  console.log(`Server is running on https://localhost:${port}`);
+});
 
 const hbs = exphbs.create({
   // Specify your custom helpers here
@@ -62,10 +73,7 @@ app.set("views", "./views");
 // define static directory "public" to access css/ and img/
 app.use(express.static("public"));
 // body parser
-app.use((req, res, next) => {
-  console.log(`Visited URL: ${req.url}`);
-  next(); // Continue to the next middleware or route handler
-});
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -80,6 +88,11 @@ app.use(
     secret: "this!@123I%%%%sASecret678Sentence@!!!#",
   })
 );
+// log user url
+app.use((req, res, next) => {
+  console.log(`Visited URL: ${req.url}`);
+  next();
+});
 
 // MODEL (DATA)
 const sqlite3 = require("sqlite3");
@@ -1144,7 +1157,7 @@ app.use(function (request, res) {
   });
 });
 
-// runs the app and listens to the port
-app.listen(port, () => {
-  console.log(`Server running and listening on port ${port}...`);
-});
+// // runs the app and listens to the port
+// app.listen(port, () => {
+//   console.log(`Server running and listening on port ${port}...`);
+// });

@@ -3,3 +3,5 @@
 
 #ignore all files in any directory named temp
 node_modules/
+projects-gh.db
+session-db.db
