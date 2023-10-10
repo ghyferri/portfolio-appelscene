@@ -505,26 +505,27 @@ db.run(
   }
 );
 
-// Initialize the database with a 'users' table
-db.serialize(() => {
-  db.run(
-    "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, isAdmin INTEGER)"
-  );
-  const adminPassword = bcrypt.hashSync("admin123", 10); // Hash the admin password
-  const userPassword = bcrypt.hashSync("user123", 10); // Hash the user
+// // Initialize the database with a 'users' table
+// Code for adding user and admin
+// db.serialize(() => {
+//   db.run(
+//     "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, isAdmin INTEGER)"
+//   );
+//   const adminPassword = bcrypt.hashSync("admin123", 10); // Hash the admin password
+//   const userPassword = bcrypt.hashSync("user123", 10); // Hash the user
 
-  const adminUser = db.prepare(
-    "INSERT OR IGNORE INTO users (username, password, isAdmin) VALUES (?, ?, ?)"
-  );
-  adminUser.run("admin", adminPassword, 1); // '1' indicates that this user is an admin
-  adminUser.finalize();
+//   const adminUser = db.prepare(
+//     "INSERT OR IGNORE INTO users (username, password, isAdmin) VALUES (?, ?, ?)"
+//   );
+//   adminUser.run("admin", adminPassword, 1); // '1' indicates that this user is an admin
+//   adminUser.finalize();
 
-  const regularUser = db.prepare(
-    "INSERT OR IGNORE INTO users (username, password, isAdmin) VALUES (?, ?, ?)"
-  );
-  regularUser.run("user", userPassword, 0); // '0' indicates that this user is not an admin
-  regularUser.finalize();
-});
+//   const regularUser = db.prepare(
+//     "INSERT OR IGNORE INTO users (username, password, isAdmin) VALUES (?, ?, ?)"
+//   );
+//   regularUser.run("user", userPassword, 0); // '0' indicates that this user is not an admin
+//   regularUser.finalize();
+// });
 
 app.get("/register", (request, response) => {
   response.render("register.handlebars", {
